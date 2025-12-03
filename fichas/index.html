@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <!-- SEO Dinámico, Microdatos y OpenGraph -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Legado Deportivo Global 3D</title>
+  <meta name="description"
+    content="Descubre el mayor archivo 3D de leyendas deportivas: multimedia, modelos interactivos e impacto social.">
+  <meta property="og:title" content="Legado Deportivo Global 3D" />
+  <meta property="og:description"
+    content="Descubre el mayor archivo 3D de leyendas deportivas: multimedia, modelos interactivos e impacto social." />
+  <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg" />
+  <meta property="og:url" content="https://tusitio.com" />
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- JSON-LD para IA y buscadores -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Legado Deportivo Global 3D",
+    "description": "Descubre el mayor archivo 3D de leyendas deportivas: multimedia, modelos interactivos e impacto social.",
+    "url": "https://tusitio.com",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg"
+  }
+  </script>
+  <!-- Three.js y GLTFLoader para 3D, A-Frame VR/AR-->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <!-- Bootstrap sólo para normalizar estilos si lo deseas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #1c1d4b 55%, #16b9ce 100%);
+      color: #222;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    header.portada-hero {
+      position: relative;
+      height: 55vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .fondo-3d {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100%;
+      z-index: 1;
+      background: #171a35;
+    }
+
+    .contenido-hero {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      width: 100%;
+    }
+
+    .titulo {
+      color: #fff;
+      font-size: 2.8em;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-shadow: 0 1px 24px #00ffee60;
+    }
+
+    .subtitulo {
+      color: #fad02e;
+      font-weight: 700;
+      text-shadow: 0 1px 16px #0ff4;
+      margin-bottom: 1.2em;
+    }
+
+    .cta {
+      background: #fad02e;
+      color: #0a2331;
+      padding: .8em 2.1em;
+      border-radius: 18px;
+      font-size: 1.3em;
+      border: 0;
+      box-shadow: 0 4px 22px #02344430;
+      font-weight: bold;
+      transition: all .2s;
+    }
+
+    .cta:hover {
+      background: #0a2331;
+      color: #fad02e;
+    }
+
+    header button {
+      background: transparent;
+      color: #fff;
+      font-size: 1.6em;
+      border: 0;
+      cursor: pointer;
+    }
+
+    /* CARRUSEL ESPIRAL DESCENDENTE Y ROTATIVO */
+    .carrusel-3d {
+      perspective: 1200px;
+      width: 100vw;
+      min-height: 800px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2.2em;
+      background: linear-gradient(180deg, #f0f4f8 0%, #e3f0ff 50%, #d0e8f2 100%);
+      padding: 3em 0;
+    }
+
+    .carrusel-contenedor {
+      width: 400px;
+      height: 600px;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    /* Contenedor espiral: cada figura se posiciona en una espiral 3D descendente */
+    .deportista {
+      position: absolute;
+      width: 240px;
+      height: 320px;
+      left: 50%;
+      top: 50%;
+      transform-origin: center center;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(.17, .67, .88, .64), box-shadow 0.3s;
+
+      /* Cálculo dinámico de posición espiral */
+      transform:
+        translateX(-50%) translateY(-50%) rotateY(var(--spiralRotY, 0deg)) rotateZ(var(--spiralRotZ, 0deg)) translateZ(var(--spiralZ, 0px)) translateY(var(--spiralY, 0px)) scale(var(--scale, 1));
+
+      box-shadow: 0 11px 38px #128abf1c;
+      background: rgba(253, 253, 255, .95);
+      border-radius: 26px;
+      text-align: center;
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0;
+    }
+
+    /* Escala y profundidad según posición en espiral */
+    .deportista:nth-child(1) {
+      --scale: 1.1;
+      --spiralZ: 320px;
+      --spiralY: -140px;
+      --spiralRotY: 0deg;
+      z-index: 20;
+    }
+
+    .deportista:nth-child(2) {
+      --scale: 1.05;
+      --spiralZ: 280px;
+      --spiralY: -80px;
+      --spiralRotY: 45deg;
+      z-index: 19;
+    }
+
+    .deportista:nth-child(3) {
+      --scale: 1.0;
+      --spiralZ: 240px;
+      --spiralY: 0px;
+      --spiralRotY: 90deg;
+      z-index: 18;
+    }
+
+    .deportista:nth-child(4) {
+      --scale: 0.95;
+      --spiralZ: 200px;
+      --spiralY: 80px;
+      --spiralRotY: 135deg;
+      z-index: 17;
+    }
+
+    .deportista:nth-child(5) {
+      --scale: 0.9;
+      --spiralZ: 160px;
+      --spiralY: 140px;
+      --spiralRotY: 180deg;
+      z-index: 16;
+    }
+
+    .deportista:nth-child(6) {
+      --scale: 0.85;
+      --spiralZ: 120px;
+      --spiralY: 160px;
+      --spiralRotY: 225deg;
+      z-index: 15;
+    }
+
+    .deportista:nth-child(7) {
+      --scale: 0.8;
+      --spiralZ: 80px;
+      --spiralY: 160px;
+      --spiralRotY: 270deg;
+      z-index: 14;
+    }
+
+    .deportista:nth-child(8) {
+      --scale: 0.75;
+      --spiralZ: 40px;
+      --spiralY: 140px;
+      --spiralRotY: 315deg;
+      z-index: 13;
+    }
+
+    .deportista:nth-child(9) {
+      --scale: 0.7;
+      --spiralZ: 0px;
+      --spiralY: 100px;
+      --spiralRotY: 360deg;
+      z-index: 12;
+    }
+
+    .deportista:nth-child(10) {
+      --scale: 0.65;
+      --spiralZ: -40px;
+      --spiralY: 60px;
+      --spiralRotY: 405deg;
+      z-index: 11;
+    }
+
+    .deportista:nth-child(11) {
+      --scale: 0.6;
+      --spiralZ: -80px;
+      --spiralY: 20px;
+      --spiralRotY: 450deg;
+      z-index: 10;
+    }
+
+    .deportista:nth-child(12) {
+      --scale: 0.55;
+      --spiralZ: -120px;
+      --spiralY: -20px;
+      --spiralRotY: 495deg;
+      z-index: 9;
+    }
+
+    .deportista:nth-child(13) {
+      --scale: 0.5;
+      --spiralZ: -160px;
+      --spiralY: -60px;
+      --spiralRotY: 540deg;
+      z-index: 8;
+    }
+
+    .deportista:nth-child(14) {
+      --scale: 0.45;
+      --spiralZ: -200px;
+      --spiralY: -100px;
+      --spiralRotY: 585deg;
+      z-index: 7;
+    }
+
+    .deportista img,
+    .deportista .sprite {
+      width: 90%;
+      border-radius: 21px 21px 13px 13px/16px 16px 7px 7px;
+      margin-top: 13px;
+      box-shadow: 0 4px 16px #07122025;
+      background: #e5f7ff;
+      object-fit: cover;
+      height: 180px;
+    }
+
+    .deportista figcaption {
+      background: rgba(45, 39, 87, 0.15);
+      border-radius: 0 0 22px 22px;
+      flex: 1;
+      padding-top: .7em;
+      padding-bottom: .3em;
+      width: 100%;
+      color: #1f273b;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .deportista h2 {
+      font-size: 0.95em;
+      margin: 0.3em 0;
+      font-weight: 700;
+    }
+
+    .deportista p {
+      font-size: 0.8em;
+      margin: 0.3em 0;
+      line-height: 1.2;
+    }
+
+    .deportista button {
+      background: #fad02e;
+      color: #16151e;
+      font-weight: 700;
+      border: none;
+      border-radius: 9px;
+      padding: .4em 0.8em;
+      margin: .3em .1em;
+      font-size: 0.85em;
+      box-shadow: 0 3px 11px #fad20044;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .deportista button:hover {
+      background: #0a2331;
+      color: #fff;
+    }
+
+    .modal-legado {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20, 37, 56, 0.93);
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      overflow-y: auto;
+    }
+
+    .modal-legado .modal-contenido {
+      background: #fff;
+      color: #222;
+      border-radius: 22px;
+      padding: 2em 1.3em 1.4em 1.4em;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 11px 36px #0d253850;
+      position: relative;
+      animation: modal-in .33s cubic-bezier(.18, .87, .57, 1.21);
+      margin: 2em auto;
+    }
+
+    @keyframes modal-in {
+      0% {
+        transform: scale(.91) translateY(60px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .cerrar {
+      position: absolute;
+      top: 1.1em;
+      right: 1.3em;
+      font-size: 2.2em;
+      color: #ff6f60;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .modal-legado video,
+    .modal-legado iframe {
+      width: 100%;
+      margin-bottom: 1em;
+      border-radius: 17px;
+    }
+
+    .sprite-3d {
+      margin: 1em auto;
+      width: 142px;
+      height: 142px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .galeria-legacy img {
+      width: 88px;
+      height: 88px;
+      border-radius: 16px;
+      margin: 7px;
+    }
+
+    .modal-legado ul {
+      margin-left: 1.5em;
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    .modal-legado ul li {
+      margin-bottom: 0.8em;
+    }
+
+    /* Control de rotación espiral con botones o interacción */
+    @media (max-width:700px) {
+      .deportista {
+        width: 85vw;
+      }
+
+      .carrusel-contenedor {
+        width: 100%;
+        height: 500px;
+      }
+    }
+
+    /* Tooltip para instrucciones */
+    .carrusel-hint {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #16b9ce;
+      font-size: 0.9em;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- PORTADA CON HERO Y ANIMACIÓN 3D -->
+  <header class="portada-hero">
+    <div class="fondo-3d" id="threejs-canvas"></div>
+    <div class="contenido-hero">
+      <h1 class="titulo">LEGADO DEPORTIVO GLOBAL 3D</h1>
+      <h2 class="subtitulo">Las leyendas que cambiaron el mundo</h2>
+      <button class="cta" onclick="document.querySelector('.carrusel-3d').scrollIntoView({behavior:'smooth'})">Ver
+        Galería Espiral</button>
+      <audio id="audioIntro" src="https://cdn.pixabay.com/audio/2022/11/16/audio_125b5a7970.mp3" autoplay loop></audio>
+      <button onclick="toggleAudio('audioIntro')">🔊/🔇</button>
+    </div>
+  </header>
+
+  <main itemscope itemtype="https://schema.org/CollectionPage">
+    <!-- CARRUSEL ESPIRAL DESCENDENTE Y ROTATIVO -->
+    <section class="carrusel-3d" aria-label="Galería 3D espiral de los deportistas más influyentes de la historia"
+      itemscope itemtype="https://schema.org/ItemList">
+      <div class="carrusel-contenedor" id="carrusel">
+        <!-- MICHAEL JORDAN -->
+        <figure class="deportista" data-n="0" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg"
+            alt="Michael Jordan leyenda NBA" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Michael Jordan</h2>
+            <p><span itemprop="jobTitle">Baloncesto</span> | 6 títulos NBA</p>
+            <button onclick="abrirModal('jordan')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- SIMONE BILES -->
+        <figure class="deportista" data-n="1" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Simone_Biles_Rio_2016b.jpg"
+            alt="Sprite Simone Biles animado" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Simone Biles</h2>
+            <p><span itemprop="jobTitle">Gimnasia</span> | 7 medallas</p>
+            <button onclick="abrirModal('biles')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- RAFAEL NADAL -->
+        <figure class="deportista" data-n="2" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Rafael_Nadal_2016_%28cropped%29.jpg"
+            alt="Rafael Nadal leyenda del tenis" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Rafael Nadal</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | 22 Grand Slam</p>
+            <button onclick="abrirModal('nadal')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- LIONEL MESSI -->
+        <figure class="deportista" data-n="3" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Lionel-Messi-Argentina-2022.jpg"
+            alt="Lionel Messi futbolista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Lionel Messi</h2>
+            <p><span itemprop="jobTitle">Fútbol</span> | 8 Balones Oro</p>
+            <button onclick="abrirModal('messi')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- USAIN BOLT -->
+        <figure class="deportista" data-n="4" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Usain_Bolt_Rio_100m_Final_2016.jpg"
+            alt="Usain Bolt velocista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Usain Bolt</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | 8 oros</p>
+            <button onclick="abrirModal('bolt')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- ROGER FEDERER -->
+        <figure class="deportista" data-n="5" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Roger_Federer_%282015-07-06%29_02.jpg"
+            alt="Roger Federer tenista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Roger Federer</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | 20 Grand Slam</p>
+            <button onclick="abrirModal('federer')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- SERENA WILLIAMS -->
+        <figure class="deportista" data-n="6" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Serena_Williams_at_2013_US_Open.jpg"
+            alt="Serena Williams tenista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Serena Williams</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | 23 Grand Slam</p>
+            <button onclick="abrirModal('serena')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- MICHAEL PHELPS -->
+        <figure class="deportista" data-n="7" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Michael_Phelps_Rio_Olympics_2016.jpg"
+            alt="Michael Phelps nadador" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Michael Phelps</h2>
+            <p><span itemprop="jobTitle">Natación</span> | 23 oros</p>
+            <button onclick="abrirModal('phelps')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- DIEGO MARADONA -->
+        <figure class="deportista" data-n="8" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Diego_Maradona_1986.jpg"
+            alt="Diego Maradona futbolista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Diego Maradona</h2>
+            <p><span itemprop="jobTitle">Fútbol</span> | Campeón 1986</p>
+            <button onclick="abrirModal('maradona')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- NADIA COMANECI -->
+        <figure class="deportista" data-n="9" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/Nadia_Comaneci_Montreal_1976.jpg"
+            alt="Nadia Comaneci gimnasta" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Nadia Comaneci</h2>
+            <p><span itemprop="jobTitle">Gimnasia</span> | 1er 10 perfecto</p>
+            <button onclick="abrirModal('comaneci')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- JESSE OWENS -->
+        <figure class="deportista" data-n="10" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Jesse_Owens_1936.jpg" alt="Jesse Owens atleta"
+            itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Jesse Owens</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | 4 oros 1936</p>
+            <button onclick="abrirModal('owens')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- MUHAMMAD ALI -->
+        <figure class="deportista" data-n="11" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Muhammad_Ali_NYWTS.jpg"
+            alt="Muhammad Ali boxeador" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Muhammad Ali</h2>
+            <p><span itemprop="jobTitle">Boxeo</span> | Campeón 3x</p>
+            <button onclick="abrirModal('ali')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PAAVO NURMI -->
+        <figure class="deportista" data-n="12" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Paavo_Nurmi_1920.jpg" alt="Paavo Nurmi atleta"
+            itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Paavo Nurmi</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | 9 oros</p>
+            <button onclick="abrirModal('nurmi')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- TOMMIE SMITH & JOHN CARLOS -->
+        <figure class="deportista" data-n="13" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/b/ba/John_Carlos%2C_Tommie_Smith%2C_Peter_Norman_1968cr.jpg"
+            alt="Smith y Carlos 1968" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Smith & Carlos</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | Puño 1968</p>
+            <button onclick="abrirModal('smith-carlos')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ -->
+        <figure class="deportista" data-n="14" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Pel%C3%A9_1962_%28cropped%29.jpg/440px-Pel%C3%A9_1962_%28cropped%29.jpg"
+            alt="Pelé futbolista brasileño" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Pelé</h2>
+            <p><span itemprop="jobTitle">Fútbol</span> | 3 Mundiales</p>
+            <button onclick="abrirModal('pele')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- ARTHUR ASHE -->
+        <figure class="deportista" data-n="15" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Arthur_Ashe_1975.jpg/440px-Arthur_Ashe_1975.jpg"
+            alt="Arthur Ashe tenista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Arthur Ashe</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | 3 Grand Slam</p>
+            <button onclick="abrirModal('ashe')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- WILMA RUDOLPH -->
+        <figure class="deportista" data-n="16" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Wilma_Rudolph_1960.jpg/440px-Wilma_Rudolph_1960.jpg"
+            alt="Wilma Rudolph atleta" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Wilma Rudolph</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | 3 oros 1960</p>
+            <button onclick="abrirModal('rudolph')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- FRANZ BECKENBAUER -->
+        <figure class="deportista" data-n="17" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Beckenbauer_1974.jpg/440px-Beckenbauer_1974.jpg"
+            alt="Franz Beckenbauer futbolista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Franz Beckenbauer</h2>
+            <p><span itemprop="jobTitle">Fútbol</span> | Balón Oro</p>
+            <button onclick="abrirModal('beckenbauer')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- JACKIE ROBINSON -->
+        <figure class="deportista" data-n="18" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Jackie_Robinson_in_1945.jpg/440px-Jackie_Robinson_in_1945.jpg"
+            alt="Jackie Robinson beisbolista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Jackie Robinson</h2>
+            <p><span itemprop="jobTitle">Béisbol</span> | Integración</p>
+            <button onclick="abrirModal('robinson')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- AYRTON SENNA -->
+        <figure class="deportista" data-n="19" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Ayrton_Senna_1988.jpg/440px-Ayrton_Senna_1988.jpg"
+            alt="Ayrton Senna piloto F1" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Ayrton Senna</h2>
+            <p><span itemprop="jobTitle">Fórmula 1</span> | 3 títulos</p>
+            <button onclick="abrirModal('senna')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- HELEN WILLS MOODY -->
+        <figure class="deportista" data-n="20" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Helen_Wills_%281918%29.jpg/440px-Helen_Wills_%281918%29.jpg"
+            alt="Helen Wills Moody tenista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Helen Wills Moody</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | 19 Grand Slam</p>
+            <button onclick="abrirModal('wills')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- JOE LOUIS -->
+        <figure class="deportista" data-n="21" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Joe_Louis_1938.jpg/440px-Joe_Louis_1938.jpg"
+            alt="Joe Louis boxeador" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Joe Louis</h2>
+            <p><span itemprop="jobTitle">Boxeo</span> | Leyenda pesos</p>
+            <button onclick="abrirModal('louis')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- CRISTIANO RONALDO -->
+        <figure class="deportista" data-n="22" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Cristiano_Ronaldo_2018.jpg/440px-Cristiano_Ronaldo_2018.jpg"
+            alt="Cristiano Ronaldo futbolista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Cristiano Ronaldo</h2>
+            <p><span itemprop="jobTitle">Fútbol</span> | 5 Balones Oro</p>
+            <button onclick="abrirModal('ronaldo')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- GRETA WAITZ -->
+        <figure class="deportista" data-n="23" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Greta_Waitz_1984.jpg/440px-Greta_Waitz_1984.jpg"
+            alt="Greta Waitz atleta noruega" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Greta Waitz</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | 9 Maratones</p>
+            <button onclick="abrirModal('waitz')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ GARRINCHA -->
+        <figure class="deportista" data-n="24" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Garrincha_1962.jpg/440px-Garrincha_1962.jpg"
+            alt="Garrincha futbolista brasileño" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Garrincha</h2>
+            <p><span itemprop="jobTitle">Fútbol</span> | 2 Mundiales</p>
+            <button onclick="abrirModal('garrincha')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- STEFFI GRAF -->
+        <figure class="deportista" data-n="25" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Steffi_Graf_1988.jpg/440px-Steffi_Graf_1988.jpg"
+            alt="Steffi Graf tenista alemana" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Steffi Graf</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | Golden Slam</p>
+            <button onclick="abrirModal('graf')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- SONJA HENIE -->
+        <figure class="deportista" data-n="26" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Sonja_Henie_1928.jpg/440px-Sonja_Henie_1928.jpg"
+            alt="Sonja Henie patinadora noruega" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Sonja Henie</h2>
+            <p><span itemprop="jobTitle">Patinaje</span> | 3 oros olímpicos</p>
+            <button onclick="abrirModal('henie')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ BOBBY JONES -->
+        <figure class="deportista" data-n="27" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Bobby_Jones_golfer.jpg/440px-Bobby_Jones_golfer.jpg"
+            alt="Bobby Jones golfista estadounidense" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Bobby Jones</h2>
+            <p><span itemprop="jobTitle">Golf</span> | Grand Slam 1930</p>
+            <button onclick="abrirModal('jones')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ BORIS BECKER -->
+        <figure class="deportista" data-n="28" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Boris_Becker_1987.jpg/440px-Boris_Becker_1987.jpg"
+            alt="Boris Becker tenista alemán" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Boris Becker</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | 6 Grand Slam</p>
+            <button onclick="abrirModal('becker')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ DALEY THOMPSON -->
+        <figure class="deportista" data-n="29" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Daley_Thompson_1984.jpg/440px-Daley_Thompson_1984.jpg"
+            alt="Daley Thompson atleta británico" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Daley Thompson</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | 2 oros decatlón</p>
+            <button onclick="abrirModal('thompson')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ FLORENCE GRIFFITH-JOYNER -->
+        <figure class="deportista" data-n="30" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Florence_Griffith-Joyner_1988.jpg/440px-Florence_Griffith-Joyner_1988.jpg"
+            alt="Flo-Jo atleta estadounidense" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Flo-Jo</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | 4 oros 1988</p>
+            <button onclick="abrirModal('flojo')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ JUAN CARLOS FERRERO -->
+        <figure class="deportista" data-n="31" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Juan_Carlos_Ferrero_2003.jpg/440px-Juan_Carlos_Ferrero_2003.jpg"
+            alt="Juan Carlos Ferrero tenista español" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Juan Carlos Ferrero</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | Número 1 mundial</p>
+            <button onclick="abrirModal('ferrero')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ MARK SPITZ -->
+        <figure class="deportista" data-n="32" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Mark_Spitz_1972.jpg/440px-Mark_Spitz_1972.jpg"
+            alt="Mark Spitz nadador estadounidense" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Mark Spitz</h2>
+            <p><span itemprop="jobTitle">Natación</span> | 7 oros 1972</p>
+            <button onclick="abrirModal('spitz')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ BILLIE JEAN KING -->
+        <figure class="deportista" data-n="33" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Billie_Jean_King_1971.jpg/440px-Billie_Jean_King_1971.jpg"
+            alt="Billie Jean King tenista" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Billie Jean King</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | 12 Grand Slam</p>
+            <button onclick="abrirModal('bjking')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ JOSÉ LUIS CHICUELA OLMEDO -->
+        <figure class="deportista" data-n="34" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Hans_Winkler_1956.jpg/440px-Hans_Winkler_1956.jpg"
+            alt="Hans Winkler jinete alemán" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Hans Winkler</h2>
+            <p><span itemprop="jobTitle">Saltos</span> | Leyenda ecuestre</p>
+            <button onclick="abrirModal('winkler')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ BOB BEAMON -->
+        <figure class="deportista" data-n="35" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Bob_Beamon_1968.jpg/440px-Bob_Beamon_1968.jpg"
+            alt="Bob Beamon atleta estadounidense" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Bob Beamon</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | Récord 1968</p>
+            <button onclick="abrirModal('beamon')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ BJORN BORG -->
+        <figure class="deportista" data-n="36" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Bj%C3%B6rn_Borg_1976.jpg/440px-Bj%C3%B6rn_Borg_1976.jpg"
+            alt="Björn Borg tenista sueco" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Björn Borg</h2>
+            <p><span itemprop="jobTitle">Tenis</span> | 11 Grand Slam</p>
+            <button onclick="abrirModal('borg')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ MARTA VIEIRA DA SILVA -->
+        <figure class="deportista" data-n="37" itemscope itemtype="https://schema.org/Person">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Marta_2011.jpg/440px-Marta_2011.jpg"
+            alt="Marta futbolista brasileña" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Marta</h2>
+            <p><span itemprop="jobTitle">Fútbol Femenino</span> | 6 Balon Oro</p>
+            <button onclick="abrirModal('marta')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ CHRISTINE OHURUOGU -->
+        <figure class="deportista" data-n="38" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Christine_Ohuruogu_2012.jpg/440px-Christine_Ohuruogu_2012.jpg"
+            alt="Christine Ohuruogu atleta británica" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Christine Ohuruogu</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | Oro 400m</p>
+            <button onclick="abrirModal('ohuruogu')">Ver Legado</button>
+          </figcaption>
+        </figure>
+
+        <!-- PELÉ JESSIE OWENS ALT VIKTOR TSIKLAURI -->
+        <figure class="deportista" data-n="39" itemscope itemtype="https://schema.org/Person">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Carl_Lewis_1984.jpg/440px-Carl_Lewis_1984.jpg"
+            alt="Carl Lewis atleta estadounidense" itemprop="image">
+          <figcaption>
+            <h2 itemprop="name">Carl Lewis</h2>
+            <p><span itemprop="jobTitle">Atletismo</span> | 9 oros olímpicos</p>
+            <button onclick="abrirModal('lewis')">Ver Legado</button>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- MODALS DE LEGADO PARA CADA ATLETA -->
+    <!-- MICHAEL JORDAN -->
+    <div id="modal-jordan" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('jordan')">&times;</span>
+        <h3 itemprop="name">Michael Jordan - Legado Global</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/gibx9kq9c1k" title="Jordan mejores jugadas"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Globalizó el baloncesto transformando la NBA en un fenómeno mundial.</li>
+          <li>Nike Air Jordan revolucionó el marketing deportivo y la economía del deporte.</li>
+          <li>Icono de liderazgo, competitividad y excelencia en múltiples generaciones.</li>
+          <li>Filántropo y empresario de éxito post-carrera profesional.</li>
+        </ul>
+        <audio id="audio-modal-jordan" src="https://cdn.pixabay.com/audio/2022/08/20/audio_125b43818a.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- SIMONE BILES -->
+    <div id="modal-biles" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('biles')">&times;</span>
+        <h3 itemprop="name">Simone Biles - Legado Contemporáneo</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/0x5R-OtBnHs" title="Simone Biles gimnasia"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Revolucionó la gimnasia femenina con técnica e innovación sin precedentes.</li>
+          <li>Visibilizó la salud mental en el deporte profesional de élite.</li>
+          <li>Inspiradora global de igualdad y empoderamiento femenino.</li>
+          <li>Activista por la inclusión y justicia social en el deporte.</li>
+        </ul>
+        <audio id="audio-modal-biles" src="https://cdn.pixabay.com/audio/2023/02/14/audio_125c36fb99.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- RAFAEL NADAL -->
+    <div id="modal-nadal" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('nadal')">&times;</span>
+        <h3 itemprop="name">Rafael Nadal - Legado de Superación</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/V9VoWK8v0b0" title="Nadal mejores puntos"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Ejemplo mundial de superación, resiliencia y deportividad auténtica.</li>
+          <li>Dominador histórico de Roland Garros, revolucionario del tenis moderno.</li>
+          <li>Fundación Nadal: impacto social real en educación e inclusión.</li>
+          <li>Inspiración intergeneracional por valores y ética deportiva.</li>
+        </ul>
+        <audio id="audio-modal-nadal" src="https://cdn.pixabay.com/audio/2022/11/16/audio_125b5a7970.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- LIONEL MESSI -->
+    <div id="modal-messi" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('messi')">&times;</span>
+        <h3 itemprop="name">Lionel Messi - Leyenda del Siglo XXI</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/V9VoWK8v0b0" title="Messi mejores goles"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Considerado el mejor futbolista de su generación y una de las leyendas del deporte.</li>
+          <li>Ganador del Mundial 2022, coronación de una carrera extraordinaria.</li>
+          <li>Humildad y liderazgo silencioso inspiraron a generaciones de futbolistas.</li>
+          <li>Impacto económico y cultural global sin precedentes en el deporte.</li>
+        </ul>
+        <audio id="audio-modal-messi" src="https://cdn.pixabay.com/audio/2023/02/14/audio_125c36fb99.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- USAIN BOLT -->
+    <div id="modal-bolt" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('bolt')">&times;</span>
+        <h3 itemprop="name">Usain Bolt - Ícono de Velocidad</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/iHkAJqQMI_o" title="Bolt 100m"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Redefinió los límites del atletismo y la velocidad humana.</li>
+          <li>Carisma global que popularizó el atletismo en el mundo.</li>
+          <li>Símbolo de celebración, diversidad y alegría en el deporte.</li>
+          <li>Embajador cultural de Jamaica e inspirador intergeneracional.</li>
+        </ul>
+        <audio id="audio-modal-bolt" src="https://cdn.pixabay.com/audio/2022/11/16/audio_125b5a7970.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- ROGER FEDERER -->
+    <div id="modal-federer" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('federer')">&times;</span>
+        <h3 itemprop="name">Roger Federer - Embajador de la Elegancia</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/POGfDTh6zYY" title="Federer mejores puntos"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Transformó el tenis con elegancia, técnica y longevidad incomparable.</li>
+          <li>Embajador global del deporte y la UNICEF durante su carrera.</li>
+          <li>Influencia en generaciones futuras de tenistas y atletas.</li>
+          <li>Ejemplo de profesionalismo, respeto y fair play en el deporte.</li>
+        </ul>
+        <audio id="audio-modal-federer" src="https://cdn.pixabay.com/audio/2023/02/14/audio_125c36fb99.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- SERENA WILLIAMS -->
+    <div id="modal-serena" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('serena')">&times;</span>
+        <h3 itemprop="name">Serena Williams - Pionera del Empoderamiento</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/5KL1xrAhC6U" title="Serena Williams"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>23 Grand Slam, leyenda del tenis y del deporte femenino global.</li>
+          <li>Defensora activa de igualdad, justicia racial y empoderamiento femenino.</li>
+          <li>Transformó la percepción del atletismo femenino y la musculación en deporte.</li>
+          <li>Inspiradora de mujeres atletas en todo el mundo.</li>
+        </ul>
+        <audio id="audio-modal-serena" src="https://cdn.pixabay.com/audio/2022/11/16/audio_125b5a7970.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- MICHAEL PHELPS -->
+    <div id="modal-phelps" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('phelps')">&times;</span>
+        <h3 itemprop="name">Michael Phelps - Nadador Legendario</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/Z8wZcWtPn3E" title="Phelps Olympic Records"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>23 medallas de oro olímpicas, el atleta más laureado en la historia.</li>
+          <li>Revolucionó la natación moderna y el entrenamiento de élite.</li>
+          <li>Activista por la salud mental y el bienestar post-carrera profesional.</li>
+          <li>Inspirador de nuevas generaciones de nadadores globales.</li>
+        </ul>
+        <audio id="audio-modal-phelps" src="https://cdn.pixabay.com/audio/2023/02/14/audio_125c36fb99.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- DIEGO MARADONA -->
+    <div id="modal-maradona" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('maradona')">&times;</span>
+        <h3 itemprop="name">Diego Maradona - Leyenda del Fútbol</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/vBphNmBfHBI"
+          title="Maradona mejores momentos" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Ganador del Mundial 1986, llevó a Argentina a la gloria mundial.</li>
+          <li>Símbolo del fútbol del "sur global" y rebeldía creativa en el deporte.</li>
+          <li>Icono cultural de pasión, talento y entrega sin límites.</li>
+          <li>Inspiración y legado duradero en América Latina y el mundo.</li>
+        </ul>
+        <audio id="audio-modal-maradona" src="https://cdn.pixabay.com/audio/2022/11/16/audio_125b5a7970.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- NADIA COMANECI -->
+    <div id="modal-comaneci" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('comaneci')">&times;</span>
+        <h3 itemprop="name">Nadia Comaneci - Revolucionaria de la Gimnasia</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/hT1bnOkzx0s" title="Nadia Comaneci 1976"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Primera gimnasta en lograr un 10 perfecto en la historia olímpica (1976).</li>
+          <li>Revolucionó la gimnasia femenina y estableció nuevos estándares.</li>
+          <li>Símbolo de precisión, elegancia y excelencia juvenil.</li>
+          <li>Inspiradora del auge global de la gimnasia artística femenina.</li>
+        </ul>
+        <audio id="audio-modal-comaneci" src="https://cdn.pixabay.com/audio/2023/02/14/audio_125c36fb99.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- JESSE OWENS -->
+    <div id="modal-owens" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('owens')">&times;</span>
+        <h3 itemprop="name">Jesse Owens - Héroe Antirracista</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/1FPB7LkNV7U" title="Jesse Owens 1936"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>4 medallas de oro en Berlín 1936, desafío al régimen nazi y racismo.</li>
+          <li>Símbolo mundial de lucha contra la discriminación racial.</li>
+          <li>Inspirador de movimientos por igualdad y justicia civil.</li>
+          <li>Legado duradero en la integración y derechos humanos globales.</li>
+        </ul>
+        <audio id="audio-modal-owens" src="https://cdn.pixabay.com/audio/2022/11/16/audio_125b5a7970.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- MUHAMMAD ALI -->
+    <div id="modal-ali" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('ali')">&times;</span>
+        <h3 itemprop="name">Muhammad Ali - Campeón de Causas</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/hEhOXz7wNiE"
+          title="Muhammad Ali documental" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>3 veces campeón mundial de boxeo de los pesos pesados.</li>
+          <li>Activista por los derechos civiles y la igualdad racial.</li>
+          <li>Transformó el boxeo y redefinió el rol del atleta en la sociedad.</li>
+          <li>Icono global de valentía moral y libertad de expresión.</li>
+        </ul>
+        <audio id="audio-modal-ali" src="https://cdn.pixabay.com/audio/2023/02/14/audio_125c36fb99.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- PAAVO NURMI -->
+    <div id="modal-nurmi" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('nurmi')">&times;</span>
+        <h3 itemprop="name">Paavo Nurmi - El Finlandés Volador</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/_lFd3RaHYx4" title="Paavo Nurmi documental"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>9 medallas de oro y 3 de plata en Juegos Olímpicos.</li>
+          <li>Revolucionó el atletismo de fondo y medio fondo.</li>
+          <li>Metodología de entrenamiento pionera, aún vigente hoy.</li>
+          <li>Inspirador de generaciones de corredores de resistencia.</li>
+        </ul>
+        <audio id="audio-modal-nurmi" src="https://cdn.pixabay.com/audio/2022/11/16/audio_125b5a7970.mp3" autoplay
+          loop></audio>
+      </div>
+    </div>
+
+    <!-- TOMMIE SMITH & JOHN CARLOS -->
+    <div id="modal-smith-carlos" class="modal-legado" itemscope itemtype="https://schema.org/Person">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal('smith-carlos')">&times;</span>
+        <h3 itemprop="name">Smith & Carlos - Símbolo de Justicia (1968)</h3>
+        <iframe width="100%" height="220" src="https://www.youtube.com/embed/pJ2SFB-ZG_k" title="Smith Carlos 1968"
+          frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <ul>
+          <li>Gesto del puño en alto en el podio olímpico de México 1968.</li>
+          <li>Símbolo icónico de lucha por los derechos civiles globales.</li>
+          <li>Mostraron que el atleta puede ser activista y símbolo social.</li>
+          <li>Legado duradero en el movimiento por justicia racial mundial.</li>
+        </ul>
+        <audio id="audio-modal-smith-carlos" src="https://cdn.pixabay.com/audio/2023/02/14/audio_125c36fb99.mp3"
+          autoplay loop></audio>
+      </div>
+    </div>
+  </main>
+
+  <footer style="text-align:center;background:#171a35;color:#fff;padding:1.5em 0;font-size:1.1em;">
+    <p>© 2025 Legado Deportivo Global | Carrusel Espiral 3D</p>
+    <p style="font-size:0.9em;margin-top:0.5em;">Powered by HTML5, CSS3, Three.js, A-Frame, Bootstrap y tecnología web
+      de vanguardia.</p>
+  </footer>
+
+  <script>
+    // GESTIÓN DEL CARRUSEL ESPIRAL
+    const figuras = document.querySelectorAll('.deportista');
+    const total = figuras.length;
+    const carrusel = document.getElementById('carrusel');
+    let anguloRotacion = 0;
+
+    function actualizarPosicionesEspiral(anguloBase) {
+      for (let i = 0; i < total; i++) {
+        const el = figuras[i];
+        const anguloRotY = (360 / total) * i + anguloBase;
+        const profundidad = Math.cos((anguloRotY * Math.PI) / 180) * 300;
+
+        el.style.setProperty('--angle', anguloRotY + 'deg');
+      }
+    }
+
+    actualizarPosicionesEspiral(anguloRotacion);
+
+    // Interacción con ratón: arrastra horizontal
+    let inicioX = null;
+    carrusel.onmousedown = (e) => {
+      inicioX = e.clientX;
+    };
+
+    carrusel.onmousemove = (e) => {
+      if (inicioX !== null) {
+        const diferencia = e.clientX - inicioX;
+        anguloRotacion += diferencia * 0.3;
+        actualizarPosicionesEspiral(anguloRotacion);
+        inicioX = e.clientX;
+      }
+    };
+
+    window.onmouseup = () => {
+      inicioX = null;
+    };
+
+    // Interacción táctil (mobile)
+    carrusel.ontouchstart = (e) => {
+      inicioX = e.touches[0].clientX;
+    };
+
+    carrusel.ontouchmove = (e) => {
+      let x = e.touches[0].clientX;
+      const diferencia = x - inicioX;
+      anguloRotacion += diferencia * 0.3;
+      actualizarPosicionesEspiral(anguloRotacion);
+      inicioX = x;
+    };
+
+    // Rueda de ratón
+    carrusel.onwheel = (e) => {
+      e.preventDefault();
+      anguloRotacion += (e.deltaY > 0 ? 1 : -1) * (360 / total);
+      actualizarPosicionesEspiral(anguloRotacion);
+    };
+
+    // GESTIÓN DE MODALS
+    function abrirModal(nombre) {
+      document.getElementById('modal-' + nombre).style.display = 'flex';
+      let a = document.getElementById('audio-modal-' + nombre);
+      if (a) a.play();
+    }
+
+    function cerrarModal(nombre) {
+      document.getElementById('modal-' + nombre).style.display = 'none';
+      let a = document.getElementById('audio-modal-' + nombre);
+      if (a) a.pause();
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.querySelectorAll('.modal-legado').forEach(modal => {
+      modal.addEventListener('click', function (event) {
+        if (event.target === this) {
+          this.style.display = 'none';
+          let audios = this.querySelectorAll('audio');
+          audios.forEach(a => a.pause());
+        }
+      });
+    });
+
+    // GESTIÓN DE AUDIO PORTADA
+    function toggleAudio(id) {
+      let a = document.getElementById(id);
+      a.paused ? a.play() : a.pause();
+    }
+
+    // Prevenir comportamiento por defecto de rueda en carrusel
+    document.querySelector('.carrusel-3d').addEventListener('wheel', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+  </script>
+</body>
+
+</html>
