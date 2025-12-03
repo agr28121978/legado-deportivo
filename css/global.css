@@ -1,0 +1,77 @@
+/* ========================================
+   LEGADO DEPORTIVO GLOBAL 3D
+   Archivo CSS Global
+   ======================================== */
+
+/* ========================================
+   1. VARIABLES CSS Y RESET
+   ======================================== */
+:root {
+    /* Colores Olímpicos Oficiales */
+    --olympic-blue: #0085C7;
+    --olympic-yellow: #F4C300;
+    --olympic-black: #000000;
+    --olympic-green: #009F3D;
+    --olympic-red: #DF0024;
+    
+    /* Paleta del Proyecto */
+    --primary: #1c1d4b;
+    --secondary: #16b9ce;
+    --accent: #fad02e;
+    --dark: #0a2331;
+    --light: #f8f9fa;
+    --spain-red: #c60b1e;
+    --spain-yellow: #ffc400;
+    
+    /* Tipografía */
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Poppins', sans-serif;
+    
+    /* Sombras */
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+    
+    /* Transiciones */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+    color: #333;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* ========================================
+   2. HEADER GLOBAL
+   ======================================== */
+.header-global {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(10, 35, 49, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-global.scrolled {
+    background: rgba(10, 35, 49, 0.95);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}

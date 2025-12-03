@@ -1,0 +1,31 @@
+{
+  "athletes": [
+    {
+      "slug": "jordan",
+      "name": "Michael Jordan",
+      "years": "1991-1998",
+      "country": "Estados Unidos",
+      "discipline": "Baloncesto",
+      "summary": "6 títulos NBA. Globalizó el baloncesto.",
+      "images": [
+        "https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg",
+        "https://i.ibb.co/8x0cb7p/jordan-gallery1.png"
+      ],
+      "sprite": "sprites/jordan-3d-sprite.png",
+      "video": "https://www.youtube.com/embed/gibx9kq9c1k",
+      "audio": "sonidos/jordan.mp3",
+      "gltf": "models/jordan.glb",
+      "legacy": [
+        "Marca deportiva global e inspiración intergeneracional.",
+        "Pionero en filantropía y motivación."
+      ]
+    },
+    // ...más atletas
+  ],
+  "seo": {
+    "title": "Legado Deportivo Global 3D",
+    "description": "Descubre el mayor archivo 3D de leyendas deportivas: multimedia, modelos interactivos e impacto social.",
+    "ogimage": "img/seo-preview.jpg",
+    "url": "https://tusitio.com"
+  }
+}
