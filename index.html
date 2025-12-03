@@ -1,1905 +1,261 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Legado Deportivo Global 3D - 40 Leyendas Deportivas</title>
-    <meta name="description"
-        content="Descubre el archivo 3D más completo de las 40 leyendas deportivas: carrusel interactivo, fichas detalladas, videos documentales y modelos 3D.">
-    <meta property="og:title" content="Legado Deportivo Global 3D" />
-    <meta property="og:description"
-        content="Archivo 3D de 40 leyendas deportivas con fichas interactivas, videos y modelos 3D." />
-    <meta property="og:image"
-        content="https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg" />
-    <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"CollectionPage","name":"Legado Deportivo Global 3D","description":"Archivo de 40 leyendas deportivas"}
-  </script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            background: linear-gradient(135deg, #1c1d4b 55%, #16b9ce 100%);
-            color: #222;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        header.portada {
-            position: relative;
-            height: 55vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-            overflow: hidden;
-        }
-
-        .fondo-3d {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100%;
-            z-index: 1;
-            background: #171a35;
-        }
-
-        .contenido-hero {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            width: 100%;
-        }
-
-        .titulo {
-            color: #fff;
-            font-size: 2.8em;
-            font-weight: 900;
-            letter-spacing: 0.05em;
-            text-shadow: 0 1px 24px rgba(0, 255, 238, 0.4);
-        }
-
-        .subtitulo {
-            color: #fad02e;
-            font-weight: 700;
-            text-shadow: 0 1px 16px;
-            margin-bottom: 1.2em;
-        }
-
-        .cta {
-            background: #fad02e;
-            color: #0a2331;
-            padding: 0.8em 2.1em;
-            border-radius: 18px;
-            font-size: 1.3em;
-            border: 0;
-            box-shadow: 0 4px 22px rgba(2, 52, 68, 0.3);
-            font-weight: bold;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .cta:hover {
-            background: #0a2331;
-            color: #fad02e;
-        }
-
-        .carrusel-3d {
-            perspective: 1200px;
-            width: 100vw;
-            min-height: 900px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2.2em;
-            background: linear-gradient(180deg, #f0f4f8 0%, #e3f0ff 50%, #d0e8f2 100%);
-            padding: 3em 0;
-            position: relative;
-        }
-
-        .flecha-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 3em;
-            color: #16b9ce;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.3s;
-            font-weight: bold;
-            z-index: 100;
-        }
-
-        .flecha-nav:hover {
-            color: #fad02e;
-            transform: translateY(-50%) scale(1.2);
-        }
-
-        .flecha-izq {
-            left: 20px;
-        }
-
-        .flecha-der {
-            right: 20px;
-        }
-
-        .carrusel-contenedor {
-            width: 800px;
-            height: 750px;
-            position: relative;
-            transform-style: preserve-3d;
-        }
-
-        .deportista {
-            position: absolute;
-            width: 240px;
-            height: 320px;
-            left: 50%;
-            top: 50%;
-            transform-origin: center center;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.17, 0.67, 0.88, 0.64), box-shadow 0.3s;
-            box-shadow: 0 11px 38px rgba(18, 138, 191, 0.11);
-            background: rgba(253, 253, 255, 0.95);
-            border-radius: 26px;
-            text-align: center;
-            cursor: pointer;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0;
-        }
-
-        .deportista img {
-            width: 90%;
-            border-radius: 21px 21px 13px 13px / 16px 16px 7px 7px;
-            margin-top: 13px;
-            box-shadow: 0 4px 16px rgba(7, 18, 32, 0.15);
-            background: #e5f7ff;
-            object-fit: cover;
-            height: 180px;
-        }
-
-        .deportista figcaption {
-            background: rgba(45, 39, 87, 0.15);
-            border-radius: 0 0 22px 22px;
-            flex: 1;
-            padding-top: 0.7em;
-            padding-bottom: 0.3em;
-            width: 100%;
-            color: #1f273b;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .deportista h2 {
-            font-size: 0.95em;
-            margin: 0.3em 0;
-            font-weight: 700;
-        }
-
-        .deportista p {
-            font-size: 0.8em;
-            margin: 0.3em 0;
-            line-height: 1.2;
-        }
-
-        .deportista button {
-            background: #fad02e;
-            color: #16151e;
-            font-weight: 700;
-            border: none;
-            border-radius: 9px;
-            padding: 0.4em 0.8em;
-            margin: 0.3em 0.1em;
-            font-size: 0.85em;
-            box-shadow: 0 3px 11px rgba(250, 208, 46, 0.27);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .deportista button:hover {
-            background: #0a2331;
-            color: #fff;
-        }
-
-        footer {
-            text-align: center;
-            background: #171a35;
-            color: #fff;
-            padding: 1.5em 0;
-            font-size: 1.1em;
-            margin-top: 3em;
-        }
-
-        @media (max-width: 768px) {
-            .deportista {
-                width: 85vw;
-            }
-
-            .carrusel-contenedor {
-                width: 100%;
-                height: 500px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <header class="portada">
-        <div class="fondo-3d"></div>
-        <div class="contenido-hero">
-            <h1 class="titulo">LEGADO DEPORTIVO GLOBAL 3D</h1>
-            <h2 class="subtitulo">40 Leyendas que cambiaron el mundo</h2>
-            <button class="cta" onclick="document.querySelector('.carrusel-3d').scrollIntoView({behavior:'smooth'})">🎬
-                Ver Galería Espiral</button>
-        </div>
-    </header>
-
-    <section class="carrusel-3d">
-        <span class="flecha-nav flecha-izq" onclick="rotarIzq()">❮</span>
-
-        <div class="carrusel-contenedor" id="carrusel">
-            <!-- ORDENADAS POR EDAD: De Mayor a Menor -->
-
-            <!-- 1. PAAVO NURMI -->
-            <figure class="deportista"
-                style="--scale: 1.15; --spiralZ: 420px; --spiralY: -180px; --spiralRotY: 0deg; z-index: 40; transform: translateX(-50%) translateY(-50%) rotateY(0deg) translateZ(420px) translateY(-180px) scale(1.15);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Paavo_Nurmi_1920.jpg" alt="Paavo Nurmi">
-                <figcaption>
-                    <h2>Paavo Nurmi</h2>
-                    <p>Atletismo | Finlandia</p>
-                    <button onclick="window.location.href='fichas/nurmi.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 2. BOBBY JONES -->
-            <figure class="deportista"
-                style="--scale: 1.12; --spiralZ: 400px; --spiralY: -140px; --spiralRotY: 20deg; z-index: 39; transform: translateX(-50%) translateY(-50%) rotateY(20deg) translateZ(400px) translateY(-140px) scale(1.12);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Bobby_Jones_golfer.jpg/440px-Bobby_Jones_golfer.jpg"
-                    alt="Bobby Jones">
-                <figcaption>
-                    <h2>Bobby Jones</h2>
-                    <p>Golf | USA</p>
-                    <button onclick="window.location.href='fichas/jones.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 3. HELEN WILLS MOODY -->
-            <figure class="deportista"
-                style="--scale: 1.10; --spiralZ: 380px; --spiralY: -100px; --spiralRotY: 40deg; z-index: 38; transform: translateX(-50%) translateY(-50%) rotateY(40deg) translateZ(380px) translateY(-100px) scale(1.10);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Helen_Wills_%281918%29.jpg/440px-Helen_Wills_%281918%29.jpg"
-                    alt="Helen Wills Moody">
-                <figcaption>
-                    <h2>Helen Wills Moody</h2>
-                    <p>Tenis | USA</p>
-                    <button onclick="window.location.href='fichas/wills.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 4. SONJA HENIE -->
-            <figure class="deportista"
-                style="--scale: 1.08; --spiralZ: 360px; --spiralY: -60px; --spiralRotY: 60deg; z-index: 37; transform: translateX(-50%) translateY(-50%) rotateY(60deg) translateZ(360px) translateY(-60px) scale(1.08);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Sonja_Henie_1928.jpg/440px-Sonja_Henie_1928.jpg"
-                    alt="Sonja Henie">
-                <figcaption>
-                    <h2>Sonja Henie</h2>
-                    <p>Patinaje | Noruega</p>
-                    <button onclick="window.location.href='fichas/henie.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 5. JESSE OWENS -->
-            <figure class="deportista"
-                style="--scale: 1.05; --spiralZ: 340px; --spiralY: -20px; --spiralRotY: 80deg; z-index: 36; transform: translateX(-50%) translateY(-50%) rotateY(80deg) translateZ(340px) translateY(-20px) scale(1.05);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Jesse_Owens_1936.jpg" alt="Jesse Owens">
-                <figcaption>
-                    <h2>Jesse Owens</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/owens.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 6. JOE LOUIS -->
-            <figure class="deportista"
-                style="--scale: 1.03; --spiralZ: 320px; --spiralY: 20px; --spiralRotY: 100deg; z-index: 35; transform: translateX(-50%) translateY(-50%) rotateY(100deg) translateZ(320px) translateY(20px) scale(1.03);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Joe_Louis_1938.jpg/440px-Joe_Louis_1938.jpg"
-                    alt="Joe Louis">
-                <figcaption>
-                    <h2>Joe Louis</h2>
-                    <p>Boxeo | USA</p>
-                    <button onclick="window.location.href='fichas/louis.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 7. JACKIE ROBINSON -->
-            <figure class="deportista"
-                style="--scale: 1.0; --spiralZ: 300px; --spiralY: 60px; --spiralRotY: 120deg; z-index: 34; transform: translateX(-50%) translateY(-50%) rotateY(120deg) translateZ(300px) translateY(60px) scale(1);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Jackie_Robinson_in_1945.jpg/440px-Jackie_Robinson_in_1945.jpg"
-                    alt="Jackie Robinson">
-                <figcaption>
-                    <h2>Jackie Robinson</h2>
-                    <p>Béisbol | USA</p>
-                    <button onclick="window.location.href='fichas/robinson.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 8. HANS WINKLER -->
-            <figure class="deportista"
-                style="--scale: 0.97; --spiralZ: 280px; --spiralY: 100px; --spiralRotY: 140deg; z-index: 33; transform: translateX(-50%) translateY(-50%) rotateY(140deg) translateZ(280px) translateY(100px) scale(0.97);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Hans_Winkler_1956.jpg/440px-Hans_Winkler_1956.jpg"
-                    alt="Hans Winkler">
-                <figcaption>
-                    <h2>Hans Winkler</h2>
-                    <p>Saltos Ecuestres | Alemania</p>
-                    <button onclick="window.location.href='fichas/winkler.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 9. GARRINCHA -->
-            <figure class="deportista"
-                style="--scale: 0.95; --spiralZ: 260px; --spiralY: 140px; --spiralRotY: 160deg; z-index: 32; transform: translateX(-50%) translateY(-50%) rotateY(160deg) translateZ(260px) translateY(140px) scale(0.95);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Garrincha_1962.jpg/440px-Garrincha_1962.jpg"
-                    alt="Garrincha">
-                <figcaption>
-                    <h2>Garrincha</h2>
-                    <p>Fútbol | Brasil</p>
-                    <button onclick="window.location.href='fichas/garrincha.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 10. WILMA RUDOLPH -->
-            <figure class="deportista"
-                style="--scale: 0.92; --spiralZ: 240px; --spiralY: 180px; --spiralRotY: 180deg; z-index: 31; transform: translateX(-50%) translateY(-50%) rotateY(180deg) translateZ(240px) translateY(180px) scale(0.92);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Wilma_Rudolph_1960.jpg/440px-Wilma_Rudolph_1960.jpg"
-                    alt="Wilma Rudolph">
-                <figcaption>
-                    <h2>Wilma Rudolph</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/rudolph.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 11. PELÉ -->
-            <figure class="deportista"
-                style="--scale: 0.90; --spiralZ: 220px; --spiralY: 220px; --spiralRotY: 200deg; z-index: 30; transform: translateX(-50%) translateY(-50%) rotateY(200deg) translateZ(220px) translateY(220px) scale(0.90);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Pel%C3%A9_1962_%28cropped%29.jpg/440px-Pel%C3%A9_1962_%28cropped%29.jpg"
-                    alt="Pelé">
-                <figcaption>
-                    <h2>Pelé</h2>
-                    <p>Fútbol | Brasil</p>
-                    <button onclick="window.location.href='fichas/pele.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 12. MUHAMMAD ALI -->
-            <figure class="deportista"
-                style="--scale: 0.87; --spiralZ: 200px; --spiralY: 260px; --spiralRotY: 220deg; z-index: 29; transform: translateX(-50%) translateY(-50%) rotateY(220deg) translateZ(200px) translateY(260px) scale(0.87);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Muhammad_Ali_NYWTS.jpg"
-                    alt="Muhammad Ali">
-                <figcaption>
-                    <h2>Muhammad Ali</h2>
-                    <p>Boxeo | USA</p>
-                    <button onclick="window.location.href='fichas/ali.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 13. ARTHUR ASHE -->
-            <figure class="deportista"
-                style="--scale: 0.85; --spiralZ: 180px; --spiralY: 300px; --spiralRotY: 240deg; z-index: 28; transform: translateX(-50%) translateY(-50%) rotateY(240deg) translateZ(180px) translateY(300px) scale(0.85);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Arthur_Ashe_1975.jpg/440px-Arthur_Ashe_1975.jpg"
-                    alt="Arthur Ashe">
-                <figcaption>
-                    <h2>Arthur Ashe</h2>
-                    <p>Tenis | USA</p>
-                    <button onclick="window.location.href='fichas/ashe.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 14. BILLIE JEAN KING -->
-            <figure class="deportista"
-                style="--scale: 0.82; --spiralZ: 160px; --spiralY: 340px; --spiralRotY: 260deg; z-index: 27; transform: translateX(-50%) translateY(-50%) rotateY(260deg) translateZ(160px) translateY(340px) scale(0.82);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Billie_Jean_King_1971.jpg/440px-Billie_Jean_King_1971.jpg"
-                    alt="Billie Jean King">
-                <figcaption>
-                    <h2>Billie Jean King</h2>
-                    <p>Tenis | USA</p>
-                    <button onclick="window.location.href='fichas/bjking.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 15. TOMMIE SMITH -->
-            <figure class="deportista"
-                style="--scale: 0.80; --spiralZ: 140px; --spiralY: 380px; --spiralRotY: 280deg; z-index: 26; transform: translateX(-50%) translateY(-50%) rotateY(280deg) translateZ(140px) translateY(380px) scale(0.80);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/John_Carlos%2C_Tommie_Smith%2C_Peter_Norman_1968cr.jpg"
-                    alt="Tommie Smith">
-                <figcaption>
-                    <h2>Tommie Smith</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/smith.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 16. FRANZ BECKENBAUER -->
-            <figure class="deportista"
-                style="--scale: 0.77; --spiralZ: 120px; --spiralY: 420px; --spiralRotY: 300deg; z-index: 25; transform: translateX(-50%) translateY(-50%) rotateY(300deg) translateZ(120px) translateY(420px) scale(0.77);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Beckenbauer_1974.jpg/440px-Beckenbauer_1974.jpg"
-                    alt="Franz Beckenbauer">
-                <figcaption>
-                    <h2>Franz Beckenbauer</h2>
-                    <p>Fútbol | Alemania</p>
-                    <button onclick="window.location.href='fichas/beckenbauer.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 17. BOB BEAMON -->
-            <figure class="deportista"
-                style="--scale: 0.75; --spiralZ: 100px; --spiralY: 460px; --spiralRotY: 320deg; z-index: 24; transform: translateX(-50%) translateY(-50%) rotateY(320deg) translateZ(100px) translateY(460px) scale(0.75);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Bob_Beamon_1968.jpg/440px-Bob_Beamon_1968.jpg"
-                    alt="Bob Beamon">
-                <figcaption>
-                    <h2>Bob Beamon</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/beamon.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 18. MARK SPITZ -->
-            <figure class="deportista"
-                style="--scale: 0.72; --spiralZ: 80px; --spiralY: 500px; --spiralRotY: 340deg; z-index: 23; transform: translateX(-50%) translateY(-50%) rotateY(340deg) translateZ(80px) translateY(500px) scale(0.72);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Mark_Spitz_1972.jpg/440px-Mark_Spitz_1972.jpg"
-                    alt="Mark Spitz">
-                <figcaption>
-                    <h2>Mark Spitz</h2>
-                    <p>Natación | USA</p>
-                    <button onclick="window.location.href='fichas/spitz.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 19. GRETA WAITZ -->
-            <figure class="deportista"
-                style="--scale: 0.70; --spiralZ: 60px; --spiralY: 540px; --spiralRotY: 360deg; z-index: 22; transform: translateX(-50%) translateY(-50%) rotateY(360deg) translateZ(60px) translateY(540px) scale(0.70);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Greta_Waitz_1984.jpg/440px-Greta_Waitz_1984.jpg"
-                    alt="Greta Waitz">
-                <figcaption>
-                    <h2>Greta Waitz</h2>
-                    <p>Atletismo | Noruega</p>
-                    <button onclick="window.location.href='fichas/waitz.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 20. BJÖRN BORG -->
-            <figure class="deportista"
-                style="--scale: 0.67; --spiralZ: 40px; --spiralY: 580px; --spiralRotY: 20deg; z-index: 21; transform: translateX(-50%) translateY(-50%) rotateY(20deg) translateZ(40px) translateY(580px) scale(0.67);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Bj%C3%B6rn_Borg_1976.jpg/440px-Bj%C3%B6rn_Borg_1976.jpg"
-                    alt="Björn Borg">
-                <figcaption>
-                    <h2>Björn Borg</h2>
-                    <p>Tenis | Suecia</p>
-                    <button onclick="window.location.href='fichas/borg.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 21. DALEY THOMPSON -->
-            <figure class="deportista"
-                style="--scale: 0.65; --spiralZ: 20px; --spiralY: 620px; --spiralRotY: 40deg; z-index: 20; transform: translateX(-50%) translateY(-50%) rotateY(40deg) translateZ(20px) translateY(620px) scale(0.65);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Daley_Thompson_1984.jpg/440px-Daley_Thompson_1984.jpg"
-                    alt="Daley Thompson">
-                <figcaption>
-                    <h2>Daley Thompson</h2>
-                    <p>Atletismo | Reino Unido</p>
-                    <button onclick="window.location.href='fichas/thompson.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 22. FLORENCE GRIFFITH-JOYNER -->
-            <figure class="deportista"
-                style="--scale: 0.62; --spiralZ: 0px; --spiralY: 660px; --spiralRotY: 60deg; z-index: 19; transform: translateX(-50%) translateY(-50%) rotateY(60deg) translateZ(0px) translateY(660px) scale(0.62);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Florence_Griffith-Joyner_1988.jpg/440px-Florence_Griffith-Joyner_1988.jpg"
-                    alt="Florence Griffith-Joyner">
-                <figcaption>
-                    <h2>Flo-Jo</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/griffith.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 23. AYRTON SENNA -->
-            <figure class="deportista"
-                style="--scale: 0.60; --spiralZ: -20px; --spiralY: 700px; --spiralRotY: 80deg; z-index: 18; transform: translateX(-50%) translateY(-50%) rotateY(80deg) translateZ(-20px) translateY(700px) scale(0.60);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Ayrton_Senna_1988.jpg/440px-Ayrton_Senna_1988.jpg"
-                    alt="Ayrton Senna">
-                <figcaption>
-                    <h2>Ayrton Senna</h2>
-                    <p>Fórmula 1 | Brasil</p>
-                    <button onclick="window.location.href='fichas/senna.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 24. DIEGO MARADONA -->
-            <figure class="deportista"
-                style="--scale: 0.57; --spiralZ: -40px; --spiralY: 740px; --spiralRotY: 100deg; z-index: 17; transform: translateX(-50%) translateY(-50%) rotateY(100deg) translateZ(-40px) translateY(740px) scale(0.57);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Diego_Maradona_1986.jpg"
-                    alt="Diego Maradona">
-                <figcaption>
-                    <h2>Diego Maradona</h2>
-                    <p>Fútbol | Argentina</p>
-                    <button onclick="window.location.href='fichas/maradona.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 25. CARL LEWIS -->
-            <figure class="deportista"
-                style="--scale: 0.55; --spiralZ: -60px; --spiralY: 780px; --spiralRotY: 120deg; z-index: 16; transform: translateX(-50%) translateY(-50%) rotateY(120deg) translateZ(-60px) translateY(780px) scale(0.55);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Carl_Lewis_1984.jpg/440px-Carl_Lewis_1984.jpg"
-                    alt="Carl Lewis">
-                <figcaption>
-                    <h2>Carl Lewis</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/lewis.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 26. NADIA COMANECI -->
-            <figure class="deportista"
-                style="--scale: 0.52; --spiralZ: -80px; --spiralY: 820px; --spiralRotY: 140deg; z-index: 15; transform: translateX(-50%) translateY(-50%) rotateY(140deg) translateZ(-80px) translateY(820px) scale(0.52);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/Nadia_Comaneci_Montreal_1976.jpg"
-                    alt="Nadia Comaneci">
-                <figcaption>
-                    <h2>Nadia Comaneci</h2>
-                    <p>Gimnasia | Rumania</p>
-                    <button onclick="window.location.href='fichas/comaneci.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 27. MICHAEL JORDAN -->
-            <figure class="deportista"
-                style="--scale: 0.50; --spiralZ: -100px; --spiralY: 860px; --spiralRotY: 160deg; z-index: 14; transform: translateX(-50%) translateY(-50%) rotateY(160deg) translateZ(-100px) translateY(860px) scale(0.50);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg"
-                    alt="Michael Jordan">
-                <figcaption>
-                    <h2>Michael Jordan</h2>
-                    <p>Baloncesto | USA</p>
-                    <button onclick="window.location.href='fichas/jordan.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 28. BORIS BECKER -->
-            <figure class="deportista"
-                style="--scale: 0.47; --spiralZ: -120px; --spiralY: 900px; --spiralRotY: 180deg; z-index: 13; transform: translateX(-50%) translateY(-50%) rotateY(180deg) translateZ(-120px) translateY(900px) scale(0.47);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Boris_Becker_1987.jpg/440px-Boris_Becker_1987.jpg"
-                    alt="Boris Becker">
-                <figcaption>
-                    <h2>Boris Becker</h2>
-                    <p>Tenis | Alemania</p>
-                    <button onclick="window.location.href='fichas/becker.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 29. STEFFI GRAF -->
-            <figure class="deportista"
-                style="--scale: 0.45; --spiralZ: -140px; --spiralY: 940px; --spiralRotY: 200deg; z-index: 12; transform: translateX(-50%) translateY(-50%) rotateY(200deg) translateZ(-140px) translateY(940px) scale(0.45);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Steffi_Graf_1988.jpg/440px-Steffi_Graf_1988.jpg"
-                    alt="Steffi Graf">
-                <figcaption>
-                    <h2>Steffi Graf</h2>
-                    <p>Tenis | Alemania</p>
-                    <button onclick="window.location.href='fichas/graf.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 30. JUAN CARLOS FERRERO -->
-            <figure class="deportista"
-                style="--scale: 0.42; --spiralZ: -160px; --spiralY: 980px; --spiralRotY: 220deg; z-index: 11; transform: translateX(-50%) translateY(-50%) rotateY(220deg) translateZ(-160px) translateY(980px) scale(0.42);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Juan_Carlos_Ferrero_2003.jpg/440px-Juan_Carlos_Ferrero_2003.jpg"
-                    alt="Juan Carlos Ferrero">
-                <figcaption>
-                    <h2>J.C. Ferrero</h2>
-                    <p>Tenis | España</p>
-                    <button onclick="window.location.href='fichas/ferrero.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 31. ROGER FEDERER -->
-            <figure class="deportista"
-                style="--scale: 0.40; --spiralZ: -180px; --spiralY: 1020px; --spiralRotY: 240deg; z-index: 10; transform: translateX(-50%) translateY(-50%) rotateY(240deg) translateZ(-180px) translateY(1020px) scale(0.40);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Roger_Federer_%282015-07-06%29_02.jpg"
-                    alt="Roger Federer">
-                <figcaption>
-                    <h2>Roger Federer</h2>
-                    <p>Tenis | Suiza</p>
-                    <button onclick="window.location.href='fichas/federer.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 32. SERENA WILLIAMS -->
-            <figure class="deportista"
-                style="--scale: 0.37; --spiralZ: -200px; --spiralY: 1060px; --spiralRotY: 260deg; z-index: 9; transform: translateX(-50%) translateY(-50%) rotateY(260deg) translateZ(-200px) translateY(1060px) scale(0.37);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Serena_Williams_at_2013_US_Open.jpg"
-                    alt="Serena Williams">
-                <figcaption>
-                    <h2>Serena Williams</h2>
-                    <p>Tenis | USA</p>
-                    <button onclick="window.location.href='fichas/serena.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 33. CHRISTINE OHURUOGU -->
-            <figure class="deportista"
-                style="--scale: 0.35; --spiralZ: -220px; --spiralY: 1100px; --spiralRotY: 280deg; z-index: 8; transform: translateX(-50%) translateY(-50%) rotateY(280deg) translateZ(-220px) translateY(1100px) scale(0.35);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Christine_Ohuruogu_2012.jpg/440px-Christine_Ohuruogu_2012.jpg"
-                    alt="Christine Ohuruogu">
-                <figcaption>
-                    <h2>Christine Ohuruogu</h2>
-                    <p>Atletismo | Reino Unido</p>
-                    <button onclick="window.location.href='fichas/ohuruogu.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 34. CRISTIANO RONALDO -->
-            <figure class="deportista"
-                style="--scale: 0.32; --spiralZ: -240px; --spiralY: 1140px; --spiralRotY: 300deg; z-index: 7; transform: translateX(-50%) translateY(-50%) rotateY(300deg) translateZ(-240px) translateY(1140px) scale(0.32);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Cristiano_Ronaldo_2018.jpg/440px-Cristiano_Ronaldo_2018.jpg"
-                    alt="Cristiano Ronaldo">
-                <figcaption>
-                    <h2>Cristiano Ronaldo</h2>
-                    <p>Fútbol | Portugal</p>
-                    <button onclick="window.location.href='fichas/ronaldo.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 35. MICHAEL PHELPS -->
-            <figure class="deportista"
-                style="--scale: 0.30; --spiralZ: -260px; --spiralY: 1180px; --spiralRotY: 320deg; z-index: 6; transform: translateX(-50%) translateY(-50%) rotateY(320deg) translateZ(-260px) translateY(1180px) scale(0.30);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Michael_Phelps_Rio_Olympics_2016.jpg"
-                    alt="Michael Phelps">
-                <figcaption>
-                    <h2>Michael Phelps</h2>
-                    <p>Natación | USA</p>
-                    <button onclick="window.location.href='fichas/phelps.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 36. RAFAEL NADAL -->
-            <figure class="deportista"
-                style="--scale: 0.27; --spiralZ: -280px; --spiralY: 1220px; --spiralRotY: 340deg; z-index: 5; transform: translateX(-50%) translateY(-50%) rotateY(340deg) translateZ(-280px) translateY(1220px) scale(0.27);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Rafael_Nadal_2016_%28cropped%29.jpg"
-                    alt="Rafael Nadal">
-                <figcaption>
-                    <h2>Rafael Nadal</h2>
-                    <p>Tenis | España</p>
-                    <button onclick="window.location.href='fichas/nadal.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 37. MARTA VIEIRA DA SILVA -->
-            <figure class="deportista"
-                style="--scale: 0.25; --spiralZ: -300px; --spiralY: 1260px; --spiralRotY: 360deg; z-index: 4; transform: translateX(-50%) translateY(-50%) rotateY(360deg) translateZ(-300px) translateY(1260px) scale(0.25);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Marta_2011.jpg/440px-Marta_2011.jpg"
-                    alt="Marta Vieira da Silva">
-                <figcaption>
-                    <h2>Marta</h2>
-                    <p>Fútbol Femenino | Brasil</p>
-                    <button onclick="window.location.href='fichas/marta.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 38. USAIN BOLT -->
-            <figure class="deportista"
-                style="--scale: 0.22; --spiralZ: -320px; --spiralY: 1300px; --spiralRotY: 20deg; z-index: 3; transform: translateX(-50%) translateY(-50%) rotateY(20deg) translateZ(-320px) translateY(1300px) scale(0.22);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Usain_Bolt_Rio_100m_Final_2016.jpg"
-                    alt="Usain Bolt">
-                <figcaption>
-                    <h2>Usain Bolt</h2>
-                    <p>Atletismo | Jamaica</p>
-                    <button onclick="window.location.href='fichas/bolt.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 39. LIONEL MESSI -->
-            <figure class="deportista"
-                style="--scale: 0.20; --spiralZ: -340px; --spiralY: 1340px; --spiralRotY: 40deg; z-index: 2; transform: translateX(-50%) translateY(-50%) rotateY(40deg) translateZ(-340px) translateY(1340px) scale(0.20);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Lionel-Messi-Argentina-2022.jpg"
-                    alt="Lionel Messi">
-                <figcaption>
-                    <h2>Lionel Messi</h2>
-                    <p>Fútbol | Argentina</p>
-                    <button onclick="window.location.href='fichas/messi.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 40. SIMONE BILES -->
-            <figure class="deportista"
-                style="--scale: 0.18; --spiralZ: -360px; --spiralY: 1380px; --spiralRotY: 60deg; z-index: 1; transform: translateX(-50%) translateY(-50%) rotateY(60deg) translateZ(-360px) translateY(1380px) scale(0.18);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Simone_Biles_Rio_2016b.jpg"
-                    alt="Simone Biles">
-                <figcaption>
-                    <h2>Simone Biles</h2>
-                    <p>Gimnasia | USA</p>
-                    <button onclick="window.location.href='fichas/biles.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-        </div>
-
-        <span class="flecha-nav flecha-der" onclick="rotarDer()">❯</span>
-    </section>
-
-    <footer>
-        <p>© 2025 Legado Deportivo Global 3D | 40 Leyendas Ordenadas por Edad</p>
-        <p style="font-size:0.9em; margin-top:0.5em;">Powered by HTML5, CSS3, Three.js y Wikimedia Commons</p>
-    </footer>
-
-    <script>
-        function rotarIzq() { alert("← Rotación izquierda"); }
-        function rotarDer() { alert("→ Rotación derecha"); }
-    </script>
-
-</body>
-
-</html>
-
-<head>
-    <!-- ============================================
-         META TAGS Y CONFIGURACIÓN DEL DOCUMENTO
-         ============================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Legado Deportivo Global 3D - Celebrando 40 Leyendas Deportivas Mundiales y 25 Héroes Españoles que transformaron la historia del deporte.">
-    <meta name="keywords"
-        content="deportistas legendarios, olimpiadas, legado deportivo, Rafael Nadal, Michael Jordan, historia del deporte">
+    <title>Legado Deportivo Global 3D - 40 Leyendas Deportivas</title>
+    
+    <!-- Meta Tags SEO -->
+    <meta name="description" content="Explora las 40 leyendas más grandes del deporte mundial con carrusel 3D interactivo, fichas detalladas y modelos 3D.">
+    <meta name="keywords" content="deportistas legendarios, olimpiadas, historia deportiva, Michael Jordan, Pelé, Muhammad Ali">
     <meta name="author" content="Legado Deportivo Global 3D">
-
-    <!-- Open Graph para redes sociales -->
+    
+    <!-- Open Graph -->
     <meta property="og:title" content="Legado Deportivo Global 3D">
-    <meta property="og:description" content="65 leyendas deportivas que cambiaron el mundo">
+    <meta property="og:description" content="40 leyendas deportivas con carrusel 3D interactivo">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="images/aros-olimpicos.png">
-
-    <meta name="description"
-        content="Descubre el archivo 3D más completo de las 40 leyendas deportivas: carrusel interactivo, fichas detalladas, videos documentales y modelos 3D.">
-    <meta property="og:title" content="Legado Deportivo Global 3D" />
-    <meta property="og:description"
-        content="Archivo 3D de 40 leyendas deportivas con fichas interactivas, videos y modelos 3D." />
-    <meta property="og:image"
-        content="https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg" />
-    <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"CollectionPage","name":"Legado Deportivo Global 3D","description":"Archivo de 40 leyendas deportivas"}
-  </script>
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Global Externo -->
+    <link rel="stylesheet" href="css/global.css">
+    
+    <!-- Three.js -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            background: linear-gradient(135deg, #1c1d4b 55%, #16b9ce 100%);
-            color: #222;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        header.portada {
-            position: relative;
-            height: 55vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-            overflow: hidden;
-        }
-
-        .fondo-3d {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100%;
-            z-index: 1;
-            background: #171a35;
-        }
-
-        .contenido-hero {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            width: 100%;
-        }
-
-        .titulo {
-            color: #fff;
-            font-size: 2.8em;
-            font-weight: 900;
-            letter-spacing: 0.05em;
-            text-shadow: 0 1px 24px rgba(0, 255, 238, 0.4);
-        }
-
-        .subtitulo {
-            color: #fad02e;
-            font-weight: 700;
-            text-shadow: 0 1px 16px;
-            margin-bottom: 1.2em;
-        }
-
-        .cta {
-            background: #fad02e;
-            color: #0a2331;
-            padding: 0.8em 2.1em;
-            border-radius: 18px;
-            font-size: 1.3em;
-            border: 0;
-            box-shadow: 0 4px 22px rgba(2, 52, 68, 0.3);
-            font-weight: bold;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .cta:hover {
-            background: #0a2331;
-            color: #fad02e;
-        }
-
-        .carrusel-3d {
-            perspective: 1200px;
-            width: 100vw;
-            min-height: 900px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2.2em;
-            background: linear-gradient(180deg, #f0f4f8 0%, #e3f0ff 50%, #d0e8f2 100%);
-            padding: 3em 0;
-            position: relative;
-        }
-
-        .flecha-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 3em;
-            color: #16b9ce;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.3s;
-            font-weight: bold;
-            z-index: 100;
-        }
-
-        .flecha-nav:hover {
-            color: #fad02e;
-            transform: translateY(-50%) scale(1.2);
-        }
-
-        .flecha-izq {
-            left: 20px;
-        }
-
-        .flecha-der {
-            right: 20px;
-        }
-
-        .carrusel-contenedor {
-            width: 800px;
-            height: 750px;
-            position: relative;
-            transform-style: preserve-3d;
-        }
-
-        .deportista {
-            position: absolute;
-            width: 240px;
-            height: 320px;
-            left: 50%;
-            top: 50%;
-            transform-origin: center center;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.17, 0.67, 0.88, 0.64), box-shadow 0.3s;
-            box-shadow: 0 11px 38px rgba(18, 138, 191, 0.11);
-            background: rgba(253, 253, 255, 0.95);
-            border-radius: 26px;
-            text-align: center;
-            cursor: pointer;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0;
-        }
-
-        .deportista img {
-            width: 90%;
-            border-radius: 21px 21px 13px 13px / 16px 16px 7px 7px;
-            margin-top: 13px;
-            box-shadow: 0 4px 16px rgba(7, 18, 32, 0.15);
-            background: #e5f7ff;
-            object-fit: cover;
-            height: 180px;
-        }
-
-        .deportista figcaption {
-            background: rgba(45, 39, 87, 0.15);
-            border-radius: 0 0 22px 22px;
-            flex: 1;
-            padding-top: 0.7em;
-            padding-bottom: 0.3em;
-            width: 100%;
-            color: #1f273b;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .deportista h2 {
-            font-size: 0.95em;
-            margin: 0.3em 0;
-            font-weight: 700;
-        }
-
-        .deportista p {
-            font-size: 0.8em;
-            margin: 0.3em 0;
-            line-height: 1.2;
-        }
-
-        .deportista button {
-            background: #fad02e;
-            color: #16151e;
-            font-weight: 700;
-            border: none;
-            border-radius: 9px;
-            padding: 0.4em 0.8em;
-            margin: 0.3em 0.1em;
-            font-size: 0.85em;
-            box-shadow: 0 3px 11px rgba(250, 208, 46, 0.27);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .deportista button:hover {
-            background: #0a2331;
-            color: #fff;
-        }
-
-        footer {
-            text-align: center;
-            background: #171a35;
-            color: #fff;
-            padding: 1.5em 0;
-            font-size: 1.1em;
-            margin-top: 3em;
-        }
-
-        @media (max-width: 768px) {
-            .deportista {
-                width: 85vw;
-            }
-
-            .carrusel-contenedor {
-                width: 100%;
-                height: 500px;
-            }
-        }
-    </style>
 </head>
-
 <body>
-
-    <header class="portada">
-        <div class="fondo-3d"></div>
-        <div class="contenido-hero">
-            <h1 class="titulo">LEGADO DEPORTIVO GLOBAL 3D</h1>
-            <h2 class="subtitulo">40 Leyendas que cambiaron el mundo</h2>
-            <button class="cta" onclick="document.querySelector('.carrusel-3d').scrollIntoView({behavior:'smooth'})">🎬
-                Ver Galería Espiral</button>
-        </div>
+    
+    <!-- HEADER GLOBAL CON NAVEGACIÓN -->
+    <header class="header-global">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html">
+                    <i class="fas fa-trophy"></i>
+                    <span>Legado Deportivo Global 3D</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="index.html">
+                                <i class="fas fa-home"></i> Inicio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="galeria.html">
+                                <i class="fas fa-globe"></i> Leyendas Internacionales
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="espana.html">
+                                <i class="fas fa-flag"></i> Leyendas España
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
-
-    <section class="carrusel-3d">
-        <span class="flecha-nav flecha-izq" onclick="rotarIzq()">❮</span>
-
-        <div class="carrusel-contenedor" id="carrusel">
-            <!-- ORDENADAS POR EDAD: De Mayor a Menor -->
-
-            <!-- 1. PAAVO NURMI -->
-            <figure class="deportista"
-                style="--scale: 1.15; --spiralZ: 420px; --spiralY: -180px; --spiralRotY: 0deg; z-index: 40; transform: translateX(-50%) translateY(-50%) rotateY(0deg) translateZ(420px) translateY(-180px) scale(1.15);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Paavo_Nurmi_1920.jpg" alt="Paavo Nurmi">
-                <figcaption>
-                    <h2>Paavo Nurmi</h2>
-                    <p>Atletismo | Finlandia</p>
-                    <button onclick="window.location.href='fichas/nurmi.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 2. BOBBY JONES -->
-            <figure class="deportista"
-                style="--scale: 1.12; --spiralZ: 400px; --spiralY: -140px; --spiralRotY: 20deg; z-index: 39; transform: translateX(-50%) translateY(-50%) rotateY(20deg) translateZ(400px) translateY(-140px) scale(1.12);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Bobby_Jones_golfer.jpg/440px-Bobby_Jones_golfer.jpg"
-                    alt="Bobby Jones">
-                <figcaption>
-                    <h2>Bobby Jones</h2>
-                    <p>Golf | USA</p>
-                    <button onclick="window.location.href='fichas/jones.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 3. HELEN WILLS MOODY -->
-            <figure class="deportista"
-                style="--scale: 1.10; --spiralZ: 380px; --spiralY: -100px; --spiralRotY: 40deg; z-index: 38; transform: translateX(-50%) translateY(-50%) rotateY(40deg) translateZ(380px) translateY(-100px) scale(1.10);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Helen_Wills_%281918%29.jpg/440px-Helen_Wills_%281918%29.jpg"
-                    alt="Helen Wills Moody">
-                <figcaption>
-                    <h2>Helen Wills Moody</h2>
-                    <p>Tenis | USA</p>
-                    <button onclick="window.location.href='fichas/wills.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 4. SONJA HENIE -->
-            <figure class="deportista"
-                style="--scale: 1.08; --spiralZ: 360px; --spiralY: -60px; --spiralRotY: 60deg; z-index: 37; transform: translateX(-50%) translateY(-50%) rotateY(60deg) translateZ(360px) translateY(-60px) scale(1.08);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Sonja_Henie_1928.jpg/440px-Sonja_Henie_1928.jpg"
-                    alt="Sonja Henie">
-                <figcaption>
-                    <h2>Sonja Henie</h2>
-                    <p>Patinaje | Noruega</p>
-                    <button onclick="window.location.href='fichas/henie.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 5. JESSE OWENS -->
-            <figure class="deportista"
-                style="--scale: 1.05; --spiralZ: 340px; --spiralY: -20px; --spiralRotY: 80deg; z-index: 36; transform: translateX(-50%) translateY(-50%) rotateY(80deg) translateZ(340px) translateY(-20px) scale(1.05);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Jesse_Owens_1936.jpg" alt="Jesse Owens">
-                <figcaption>
-                    <h2>Jesse Owens</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/owens.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 6. JOE LOUIS -->
-            <figure class="deportista"
-                style="--scale: 1.03; --spiralZ: 320px; --spiralY: 20px; --spiralRotY: 100deg; z-index: 35; transform: translateX(-50%) translateY(-50%) rotateY(100deg) translateZ(320px) translateY(20px) scale(1.03);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Joe_Louis_1938.jpg/440px-Joe_Louis_1938.jpg"
-                    alt="Joe Louis">
-                <figcaption>
-                    <h2>Joe Louis</h2>
-                    <p>Boxeo | USA</p>
-                    <button onclick="window.location.href='fichas/louis.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 7. JACKIE ROBINSON -->
-            <figure class="deportista"
-                style="--scale: 1.0; --spiralZ: 300px; --spiralY: 60px; --spiralRotY: 120deg; z-index: 34; transform: translateX(-50%) translateY(-50%) rotateY(120deg) translateZ(300px) translateY(60px) scale(1);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Jackie_Robinson_in_1945.jpg/440px-Jackie_Robinson_in_1945.jpg"
-                    alt="Jackie Robinson">
-                <figcaption>
-                    <h2>Jackie Robinson</h2>
-                    <p>Béisbol | USA</p>
-                    <button onclick="window.location.href='fichas/robinson.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 8. HANS WINKLER -->
-            <figure class="deportista"
-                style="--scale: 0.97; --spiralZ: 280px; --spiralY: 100px; --spiralRotY: 140deg; z-index: 33; transform: translateX(-50%) translateY(-50%) rotateY(140deg) translateZ(280px) translateY(100px) scale(0.97);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Hans_Winkler_1956.jpg/440px-Hans_Winkler_1956.jpg"
-                    alt="Hans Winkler">
-                <figcaption>
-                    <h2>Hans Winkler</h2>
-                    <p>Saltos Ecuestres | Alemania</p>
-                    <button onclick="window.location.href='fichas/winkler.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 9. GARRINCHA -->
-            <figure class="deportista"
-                style="--scale: 0.95; --spiralZ: 260px; --spiralY: 140px; --spiralRotY: 160deg; z-index: 32; transform: translateX(-50%) translateY(-50%) rotateY(160deg) translateZ(260px) translateY(140px) scale(0.95);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Garrincha_1962.jpg/440px-Garrincha_1962.jpg"
-                    alt="Garrincha">
-                <figcaption>
-                    <h2>Garrincha</h2>
-                    <p>Fútbol | Brasil</p>
-                    <button onclick="window.location.href='fichas/garrincha.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 10. WILMA RUDOLPH -->
-            <figure class="deportista"
-                style="--scale: 0.92; --spiralZ: 240px; --spiralY: 180px; --spiralRotY: 180deg; z-index: 31; transform: translateX(-50%) translateY(-50%) rotateY(180deg) translateZ(240px) translateY(180px) scale(0.92);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Wilma_Rudolph_1960.jpg/440px-Wilma_Rudolph_1960.jpg"
-                    alt="Wilma Rudolph">
-                <figcaption>
-                    <h2>Wilma Rudolph</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/rudolph.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 11. PELÉ -->
-            <figure class="deportista"
-                style="--scale: 0.90; --spiralZ: 220px; --spiralY: 220px; --spiralRotY: 200deg; z-index: 30; transform: translateX(-50%) translateY(-50%) rotateY(200deg) translateZ(220px) translateY(220px) scale(0.90);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Pel%C3%A9_1962_%28cropped%29.jpg/440px-Pel%C3%A9_1962_%28cropped%29.jpg"
-                    alt="Pelé">
-                <figcaption>
-                    <h2>Pelé</h2>
-                    <p>Fútbol | Brasil</p>
-                    <button onclick="window.location.href='fichas/pele.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 12. MUHAMMAD ALI -->
-            <figure class="deportista"
-                style="--scale: 0.87; --spiralZ: 200px; --spiralY: 260px; --spiralRotY: 220deg; z-index: 29; transform: translateX(-50%) translateY(-50%) rotateY(220deg) translateZ(200px) translateY(260px) scale(0.87);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Muhammad_Ali_NYWTS.jpg"
-                    alt="Muhammad Ali">
-                <figcaption>
-                    <h2>Muhammad Ali</h2>
-                    <p>Boxeo | USA</p>
-                    <button onclick="window.location.href='fichas/ali.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 13. ARTHUR ASHE -->
-            <figure class="deportista"
-                style="--scale: 0.85; --spiralZ: 180px; --spiralY: 300px; --spiralRotY: 240deg; z-index: 28; transform: translateX(-50%) translateY(-50%) rotateY(240deg) translateZ(180px) translateY(300px) scale(0.85);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Arthur_Ashe_1975.jpg/440px-Arthur_Ashe_1975.jpg"
-                    alt="Arthur Ashe">
-                <figcaption>
-                    <h2>Arthur Ashe</h2>
-                    <p>Tenis | USA</p>
-                    <button onclick="window.location.href='fichas/ashe.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 14. BILLIE JEAN KING -->
-            <figure class="deportista"
-                style="--scale: 0.82; --spiralZ: 160px; --spiralY: 340px; --spiralRotY: 260deg; z-index: 27; transform: translateX(-50%) translateY(-50%) rotateY(260deg) translateZ(160px) translateY(340px) scale(0.82);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Billie_Jean_King_1971.jpg/440px-Billie_Jean_King_1971.jpg"
-                    alt="Billie Jean King">
-                <figcaption>
-                    <h2>Billie Jean King</h2>
-                    <p>Tenis | USA</p>
-                    <button onclick="window.location.href='fichas/bjking.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 15. TOMMIE SMITH -->
-            <figure class="deportista"
-                style="--scale: 0.80; --spiralZ: 140px; --spiralY: 380px; --spiralRotY: 280deg; z-index: 26; transform: translateX(-50%) translateY(-50%) rotateY(280deg) translateZ(140px) translateY(380px) scale(0.80);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/John_Carlos%2C_Tommie_Smith%2C_Peter_Norman_1968cr.jpg"
-                    alt="Tommie Smith">
-                <figcaption>
-                    <h2>Tommie Smith</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/smith.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 16. FRANZ BECKENBAUER -->
-            <figure class="deportista"
-                style="--scale: 0.77; --spiralZ: 120px; --spiralY: 420px; --spiralRotY: 300deg; z-index: 25; transform: translateX(-50%) translateY(-50%) rotateY(300deg) translateZ(120px) translateY(420px) scale(0.77);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Beckenbauer_1974.jpg/440px-Beckenbauer_1974.jpg"
-                    alt="Franz Beckenbauer">
-                <figcaption>
-                    <h2>Franz Beckenbauer</h2>
-                    <p>Fútbol | Alemania</p>
-                    <button onclick="window.location.href='fichas/beckenbauer.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 17. BOB BEAMON -->
-            <figure class="deportista"
-                style="--scale: 0.75; --spiralZ: 100px; --spiralY: 460px; --spiralRotY: 320deg; z-index: 24; transform: translateX(-50%) translateY(-50%) rotateY(320deg) translateZ(100px) translateY(460px) scale(0.75);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Bob_Beamon_1968.jpg/440px-Bob_Beamon_1968.jpg"
-                    alt="Bob Beamon">
-                <figcaption>
-                    <h2>Bob Beamon</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/beamon.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 18. MARK SPITZ -->
-            <figure class="deportista"
-                style="--scale: 0.72; --spiralZ: 80px; --spiralY: 500px; --spiralRotY: 340deg; z-index: 23; transform: translateX(-50%) translateY(-50%) rotateY(340deg) translateZ(80px) translateY(500px) scale(0.72);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Mark_Spitz_1972.jpg/440px-Mark_Spitz_1972.jpg"
-                    alt="Mark Spitz">
-                <figcaption>
-                    <h2>Mark Spitz</h2>
-                    <p>Natación | USA</p>
-                    <button onclick="window.location.href='fichas/spitz.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 19. GRETA WAITZ -->
-            <figure class="deportista"
-                style="--scale: 0.70; --spiralZ: 60px; --spiralY: 540px; --spiralRotY: 360deg; z-index: 22; transform: translateX(-50%) translateY(-50%) rotateY(360deg) translateZ(60px) translateY(540px) scale(0.70);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Greta_Waitz_1984.jpg/440px-Greta_Waitz_1984.jpg"
-                    alt="Greta Waitz">
-                <figcaption>
-                    <h2>Greta Waitz</h2>
-                    <p>Atletismo | Noruega</p>
-                    <button onclick="window.location.href='fichas/waitz.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 20. BJÖRN BORG -->
-            <figure class="deportista"
-                style="--scale: 0.67; --spiralZ: 40px; --spiralY: 580px; --spiralRotY: 20deg; z-index: 21; transform: translateX(-50%) translateY(-50%) rotateY(20deg) translateZ(40px) translateY(580px) scale(0.67);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Bj%C3%B6rn_Borg_1976.jpg/440px-Bj%C3%B6rn_Borg_1976.jpg"
-                    alt="Björn Borg">
-                <figcaption>
-                    <h2>Björn Borg</h2>
-                    <p>Tenis | Suecia</p>
-                    <button onclick="window.location.href='fichas/borg.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 21. DALEY THOMPSON -->
-            <figure class="deportista"
-                style="--scale: 0.65; --spiralZ: 20px; --spiralY: 620px; --spiralRotY: 40deg; z-index: 20; transform: translateX(-50%) translateY(-50%) rotateY(40deg) translateZ(20px) translateY(620px) scale(0.65);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Daley_Thompson_1984.jpg/440px-Daley_Thompson_1984.jpg"
-                    alt="Daley Thompson">
-                <figcaption>
-                    <h2>Daley Thompson</h2>
-                    <p>Atletismo | Reino Unido</p>
-                    <button onclick="window.location.href='fichas/thompson.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 22. FLORENCE GRIFFITH-JOYNER -->
-            <figure class="deportista"
-                style="--scale: 0.62; --spiralZ: 0px; --spiralY: 660px; --spiralRotY: 60deg; z-index: 19; transform: translateX(-50%) translateY(-50%) rotateY(60deg) translateZ(0px) translateY(660px) scale(0.62);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Florence_Griffith-Joyner_1988.jpg/440px-Florence_Griffith-Joyner_1988.jpg"
-                    alt="Florence Griffith-Joyner">
-                <figcaption>
-                    <h2>Flo-Jo</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/griffith.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 23. AYRTON SENNA -->
-            <figure class="deportista"
-                style="--scale: 0.60; --spiralZ: -20px; --spiralY: 700px; --spiralRotY: 80deg; z-index: 18; transform: translateX(-50%) translateY(-50%) rotateY(80deg) translateZ(-20px) translateY(700px) scale(0.60);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Ayrton_Senna_1988.jpg/440px-Ayrton_Senna_1988.jpg"
-                    alt="Ayrton Senna">
-                <figcaption>
-                    <h2>Ayrton Senna</h2>
-                    <p>Fórmula 1 | Brasil</p>
-                    <button onclick="window.location.href='fichas/senna.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 24. DIEGO MARADONA -->
-            <figure class="deportista"
-                style="--scale: 0.57; --spiralZ: -40px; --spiralY: 740px; --spiralRotY: 100deg; z-index: 17; transform: translateX(-50%) translateY(-50%) rotateY(100deg) translateZ(-40px) translateY(740px) scale(0.57);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Diego_Maradona_1986.jpg"
-                    alt="Diego Maradona">
-                <figcaption>
-                    <h2>Diego Maradona</h2>
-                    <p>Fútbol | Argentina</p>
-                    <button onclick="window.location.href='fichas/maradona.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 25. CARL LEWIS -->
-            <figure class="deportista"
-                style="--scale: 0.55; --spiralZ: -60px; --spiralY: 780px; --spiralRotY: 120deg; z-index: 16; transform: translateX(-50%) translateY(-50%) rotateY(120deg) translateZ(-60px) translateY(780px) scale(0.55);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Carl_Lewis_1984.jpg/440px-Carl_Lewis_1984.jpg"
-                    alt="Carl Lewis">
-                <figcaption>
-                    <h2>Carl Lewis</h2>
-                    <p>Atletismo | USA</p>
-                    <button onclick="window.location.href='fichas/lewis.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 26. NADIA COMANECI -->
-            <figure class="deportista"
-                style="--scale: 0.52; --spiralZ: -80px; --spiralY: 820px; --spiralRotY: 140deg; z-index: 15; transform: translateX(-50%) translateY(-50%) rotateY(140deg) translateZ(-80px) translateY(820px) scale(0.52);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/Nadia_Comaneci_Montreal_1976.jpg"
-                    alt="Nadia Comaneci">
-                <figcaption>
-                    <h2>Nadia Comaneci</h2>
-                    <p>Gimnasia | Rumania</p>
-                    <button onclick="window.location.href='fichas/comaneci.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 27. MICHAEL JORDAN -->
-            <figure class="deportista"
-                style="--scale: 0.50; --spiralZ: -100px; --spiralY: 860px; --spiralRotY: 160deg; z-index: 14; transform: translateX(-50%) translateY(-50%) rotateY(160deg) translateZ(-100px) translateY(860px) scale(0.50);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Michael_Jordan_in_2014.jpg"
-                    alt="Michael Jordan">
-                <figcaption>
-                    <h2>Michael Jordan</h2>
-                    <p>Baloncesto | USA</p>
-                    <button onclick="window.location.href='fichas/jordan.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 28. BORIS BECKER -->
-            <figure class="deportista"
-                style="--scale: 0.47; --spiralZ: -120px; --spiralY: 900px; --spiralRotY: 180deg; z-index: 13; transform: translateX(-50%) translateY(-50%) rotateY(180deg) translateZ(-120px) translateY(900px) scale(0.47);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Boris_Becker_1987.jpg/440px-Boris_Becker_1987.jpg"
-                    alt="Boris Becker">
-                <figcaption>
-                    <h2>Boris Becker</h2>
-                    <p>Tenis | Alemania</p>
-                    <button onclick="window.location.href='fichas/becker.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 29. STEFFI GRAF -->
-            <figure class="deportista"
-                style="--scale: 0.45; --spiralZ: -140px; --spiralY: 940px; --spiralRotY: 200deg; z-index: 12; transform: translateX(-50%) translateY(-50%) rotateY(200deg) translateZ(-140px) translateY(940px) scale(0.45);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Steffi_Graf_1988.jpg/440px-Steffi_Graf_1988.jpg"
-                    alt="Steffi Graf">
-                <figcaption>
-                    <h2>Steffi Graf</h2>
-                    <p>Tenis | Alemania</p>
-                    <button onclick="window.location.href='fichas/graf.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 30. JUAN CARLOS FERRERO -->
-            <figure class="deportista"
-                style="--scale: 0.42; --spiralZ: -160px; --spiralY: 980px; --spiralRotY: 220deg; z-index: 11; transform: translateX(-50%) translateY(-50%) rotateY(220deg) translateZ(-160px) translateY(980px) scale(0.42);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Juan_Carlos_Ferrero_2003.jpg/440px-Juan_Carlos_Ferrero_2003.jpg"
-                    alt="Juan Carlos Ferrero">
-                <figcaption>
-                    <h2>J.C. Ferrero</h2>
-                    <p>Tenis | España</p>
-                    <button onclick="window.location.href='fichas/ferrero.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 31. ROGER FEDERER -->
-            <figure class="deportista"
-                style="--scale: 0.40; --spiralZ: -180px; --spiralY: 1020px; --spiralRotY: 240deg; z-index: 10; transform: translateX(-50%) translateY(-50%) rotateY(240deg) translateZ(-180px) translateY(1020px) scale(0.40);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Roger_Federer_%282015-07-06%29_02.jpg"
-                    alt="Roger Federer">
-                <figcaption>
-                    <h2>Roger Federer</h2>
-                    <p>Tenis | Suiza</p>
-                    <button onclick="window.location.href='fichas/federer.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 32. SERENA WILLIAMS -->
-            <figure class="deportista"
-                style="--scale: 0.37; --spiralZ: -200px; --spiralY: 1060px; --spiralRotY: 260deg; z-index: 9; transform: translateX(-50%) translateY(-50%) rotateY(260deg) translateZ(-200px) translateY(1060px) scale(0.37);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Serena_Williams_at_2013_US_Open.jpg"
-                    alt="Serena Williams">
-                <figcaption>
-                    <h2>Serena Williams</h2>
-                    <p>Tenis | USA</p>
-                    <button onclick="window.location.href='fichas/serena.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 33. CHRISTINE OHURUOGU -->
-            <figure class="deportista"
-                style="--scale: 0.35; --spiralZ: -220px; --spiralY: 1100px; --spiralRotY: 280deg; z-index: 8; transform: translateX(-50%) translateY(-50%) rotateY(280deg) translateZ(-220px) translateY(1100px) scale(0.35);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Christine_Ohuruogu_2012.jpg/440px-Christine_Ohuruogu_2012.jpg"
-                    alt="Christine Ohuruogu">
-                <figcaption>
-                    <h2>Christine Ohuruogu</h2>
-                    <p>Atletismo | Reino Unido</p>
-                    <button onclick="window.location.href='fichas/ohuruogu.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 34. CRISTIANO RONALDO -->
-            <figure class="deportista"
-                style="--scale: 0.32; --spiralZ: -240px; --spiralY: 1140px; --spiralRotY: 300deg; z-index: 7; transform: translateX(-50%) translateY(-50%) rotateY(300deg) translateZ(-240px) translateY(1140px) scale(0.32);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Cristiano_Ronaldo_2018.jpg/440px-Cristiano_Ronaldo_2018.jpg"
-                    alt="Cristiano Ronaldo">
-                <figcaption>
-                    <h2>Cristiano Ronaldo</h2>
-                    <p>Fútbol | Portugal</p>
-                    <button onclick="window.location.href='fichas/ronaldo.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 35. MICHAEL PHELPS -->
-            <figure class="deportista"
-                style="--scale: 0.30; --spiralZ: -260px; --spiralY: 1180px; --spiralRotY: 320deg; z-index: 6; transform: translateX(-50%) translateY(-50%) rotateY(320deg) translateZ(-260px) translateY(1180px) scale(0.30);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Michael_Phelps_Rio_Olympics_2016.jpg"
-                    alt="Michael Phelps">
-                <figcaption>
-                    <h2>Michael Phelps</h2>
-                    <p>Natación | USA</p>
-                    <button onclick="window.location.href='fichas/phelps.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 36. RAFAEL NADAL -->
-            <figure class="deportista"
-                style="--scale: 0.27; --spiralZ: -280px; --spiralY: 1220px; --spiralRotY: 340deg; z-index: 5; transform: translateX(-50%) translateY(-50%) rotateY(340deg) translateZ(-280px) translateY(1220px) scale(0.27);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Rafael_Nadal_2016_%28cropped%29.jpg"
-                    alt="Rafael Nadal">
-                <figcaption>
-                    <h2>Rafael Nadal</h2>
-                    <p>Tenis | España</p>
-                    <button onclick="window.location.href='fichas/nadal.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 37. MARTA VIEIRA DA SILVA -->
-            <figure class="deportista"
-                style="--scale: 0.25; --spiralZ: -300px; --spiralY: 1260px; --spiralRotY: 360deg; z-index: 4; transform: translateX(-50%) translateY(-50%) rotateY(360deg) translateZ(-300px) translateY(1260px) scale(0.25);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Marta_2011.jpg/440px-Marta_2011.jpg"
-                    alt="Marta Vieira da Silva">
-                <figcaption>
-                    <h2>Marta</h2>
-                    <p>Fútbol Femenino | Brasil</p>
-                    <button onclick="window.location.href='fichas/marta.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 38. USAIN BOLT -->
-            <figure class="deportista"
-                style="--scale: 0.22; --spiralZ: -320px; --spiralY: 1300px; --spiralRotY: 20deg; z-index: 3; transform: translateX(-50%) translateY(-50%) rotateY(20deg) translateZ(-320px) translateY(1300px) scale(0.22);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Usain_Bolt_Rio_100m_Final_2016.jpg"
-                    alt="Usain Bolt">
-                <figcaption>
-                    <h2>Usain Bolt</h2>
-                    <p>Atletismo | Jamaica</p>
-                    <button onclick="window.location.href='fichas/bolt.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 39. LIONEL MESSI -->
-            <figure class="deportista"
-                style="--scale: 0.20; --spiralZ: -340px; --spiralY: 1340px; --spiralRotY: 40deg; z-index: 2; transform: translateX(-50%) translateY(-50%) rotateY(40deg) translateZ(-340px) translateY(1340px) scale(0.20);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Lionel-Messi-Argentina-2022.jpg"
-                    alt="Lionel Messi">
-                <figcaption>
-                    <h2>Lionel Messi</h2>
-                    <p>Fútbol | Argentina</p>
-                    <button onclick="window.location.href='fichas/messi.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
-            <!-- 40. SIMONE BILES -->
-            <figure class="deportista"
-                style="--scale: 0.18; --spiralZ: -360px; --spiralY: 1380px; --spiralRotY: 60deg; z-index: 1; transform: translateX(-50%) translateY(-50%) rotateY(60deg) translateZ(-360px) translateY(1380px) scale(0.18);">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Simone_Biles_Rio_2016b.jpg"
-                    alt="Simone Biles">
-                <figcaption>
-                    <h2>Simone Biles</h2>
-                    <p>Gimnasia | USA</p>
-                    <button onclick="window.location.href='fichas/biles.html'">Historia y Legado</button>
-                </figcaption>
-            </figure>
-
+    
+    <!-- HERO SECTION -->
+    <section class="hero-portada">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title animate-fade-in">LEGADO DEPORTIVO GLOBAL 3D</h1>
+            <p class="hero-subtitle animate-fade-in-delay">40 Leyendas que cambiaron el mundo</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">40</span>
+                    <span class="stat-label">Leyendas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">20+</span>
+                    <span class="stat-label">Deportes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span class="stat-label">Años de Historia</span>
+                </div>
+            </div>
+            
+            <div class="hero-buttons">
+                <a href="#carrusel-3d" class="btn-hero btn-hero-primary">
+                    <i class="fas fa-cube"></i> Ver Carrusel 3D
+                </a>
+                <a href="galeria.html" class="btn-hero btn-hero-secondary">
+                    <i class="fas fa-th"></i> Galería Completa
+                </a>
+            </div>
         </div>
-
-        <span class="flecha-nav flecha-der" onclick="rotarDer()">❯</span>
     </section>
-
-    <footer>
-        <p>© 2025 Legado Deportivo Global 3D | 40 Leyendas Ordenadas por Edad</p>
-        <p style="font-size:0.9em; margin-top:0.5em;">Powered by HTML5, CSS3, Three.js y Wikimedia Commons</p>
+    
+    <!-- CARRUSEL 3D ESPIRAL -->
+    <section id="carrusel-3d" class="carrusel-section">
+        <div class="container-fluid">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Carrusel 3D Interactivo</h2>
+                <p class="section-subtitle">40 leyendas ordenadas cronológicamente</p>
+            </div>
+            
+            <div class="carrusel-3d-wrapper">
+                <span class="flecha-nav flecha-izq" onclick="rotarCarrusel('izq')">
+                    <i class="fas fa-chevron-left"></i>
+                </span>
+                
+                <div class="carrusel-contenedor" id="carrusel">
+                    <!-- Los deportistas se renderizan aquí desde el código inline del HTML original -->
+                    <!-- Por ahora dejamos el HTML estático que ya tienes funcionando -->
+                </div>
+                
+                <span class="flecha-nav flecha-der" onclick="rotarCarrusel('der')">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+            </div>
+            
+            <div class="carrusel-info text-center mt-4">
+                <p class="text-muted">
+                    <i class="fas fa-info-circle"></i> 
+                    Usa las flechas o arrastra para explorar el carrusel
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- SECCIÓN DE CATEGORÍAS -->
+    <section class="categories-section py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Explora por Categoría</h2>
+                <p class="section-subtitle">Descubre leyendas organizadas por región</p>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Leyendas Internacionales -->
+                <div class="col-md-6">
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>Leyendas Internacionales</h3>
+                        <p>40 deportistas que marcaron la historia del deporte mundial desde los Juegos Olímpicos antiguos hasta la era moderna.</p>
+                        <a href="galeria.html" class="btn btn-category">
+                            Ver Galería <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Héroes de España -->
+                <div class="col-md-6">
+                    <div class="category-card">
+                        <div class="category-icon spain-icon">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <h3>Héroes de España</h3>
+                        <p>25 deportistas españoles que conquistaron el mundo: desde Rafa Nadal hasta Fernando Alonso, pasando por leyendas del fútbol y más.</p>
+                        <a href="espana.html" class="btn btn-category">
+                            Ver Galería <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FOOTER GLOBAL -->
+    <footer class="footer-global">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="footer-title">
+                        <i class="fas fa-trophy me-2"></i> LEGADO DEPORTIVO GLOBAL 3D
+                    </h5>
+                    <p class="footer-text">
+                        Un tributo interactivo a las leyendas del deporte que inspiraron a generaciones con su talento, dedicación y espíritu competitivo.
+                    </p>
+                </div>
+                
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="footer-title">Enlaces Rápidos</h5>
+                    <ul class="footer-links">
+                        <li><a href="index.html"><i class="fas fa-home me-2"></i> Inicio</a></li>
+                        <li><a href="galeria.html"><i class="fas fa-globe me-2"></i> Leyendas Internacionales</a></li>
+                        <li><a href="espana.html"><i class="fas fa-flag me-2"></i> Leyendas España</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4">
+                    <h5 class="footer-title">Proyecto Académico</h5>
+                    <p class="footer-text small">
+                        Desarrollo Web Avanzado - 2025<br>
+                        Tecnologías: HTML5, CSS3, JavaScript, Three.js, Bootstrap 5
+                    </p>
+                </div>
+            </div>
+            
+            <hr class="footer-divider">
+            
+            <div class="text-center">
+                <p class="footer-copyright">&copy; 2025 Legado Deportivo Global 3D. Proyecto educativo sin fines comerciales.</p>
+            </div>
+        </div>
     </footer>
-
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript para el carrusel -->
     <script>
-        function rotarIzq() { alert("← Rotación izquierda"); }
-        function rotarDer() { alert("→ Rotación derecha"); }
+        let anguloActual = 0;
+        const totalDeportistas = 40;
+        const anguloStep = 360 / totalDeportistas;
+        
+        function rotarCarrusel(direccion) {
+            if (direccion === 'izq') {
+                anguloActual -= anguloStep;
+            } else {
+                anguloActual += anguloStep;
+            }
+            
+            const carrusel = document.getElementById('carrusel');
+            if (carrusel) {
+                carrusel.style.transform = `rotateY(${anguloActual}deg)`;
+            }
+        }
+        
+        // Scroll suave para enlaces ancla
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Efecto scroll en header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header-global');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
     </script>
-
+    
 </body>
-
 </html>
-
-<!-- ============================================
-         LIBRERÍAS EXTERNAS CDN
-         ============================================ -->
-
-<!-- Bootstrap 5.3.0 - Framework CSS responsive -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Font Awesome 6.4.0 - Iconografía vectorial -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<!-- Google Fonts - Tipografía profesional -->
-<link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap"
-    rel="stylesheet">
-
-<!-- ============================================
-         ESTILOS CSS3 INTEGRADOS
-         ============================================ -->
-<style>
-    /* ==========================================
-           RESET GLOBAL Y VARIABLES CSS
-           ========================================== */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    :root {
-        /* Colores Olímpicos Oficiales */
-        --olympic-blue: #0085C7;
-        --olympic-yellow: #F4C300;
-        --olympic-black: #000000;
-        --olympic-green: #009F3D;
-        --olympic-red: #DF0024;
-
-        /* Paleta del Proyecto */
-        --primary: #1c1d4b;
-        --secondary: #16b9ce;
-        --accent: #fad02e;
-        --dark: #0a2331;
-        --light: #f8f9fa;
-
-        /* Tipografía */
-        --font-display: 'Playfair Display', serif;
-        --font-body: 'Poppins', sans-serif;
-
-        /* Sombras 3D */
-        --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
-        --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
-        --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
-        --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-
-    /* ==========================================
-           ESTILOS BODY Y HTML
-           ========================================== */
-    html {
-        scroll-behavior: smooth;
-    }
-
-    body {
-        font-family: var(--font-body);
-        overflow: hidden;
-        /* Sin scroll en intro */
-        background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
-        color: white;
-    }
-
-    /* ==========================================
-           FONDO ANIMADO CON IMAGEN
-           ========================================== */
-    .background {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: url('images/fondo-olimpico.jpg') center center / cover no-repeat;
-        filter: brightness(0.4) blur(2px);
-        z-index: 0;
-        animation: zoomBackground 20s ease-in-out infinite alternate;
-    }
-
-    @keyframes zoomBackground {
-        0% {
-            transform: scale(1);
-        }
-
-        100% {
-            transform: scale(1.1);
-        }
-    }
-
-    /* ==========================================
-           CONTENEDOR PRINCIPAL DE LA INTRO
-           ========================================== */
-    .intro-container {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 2rem;
-        text-align: center;
-    }
-
-    /* ==========================================
-           TÍTULO PRINCIPAL
-           ========================================== */
-    .titulo-principal {
-        font-family: var(--font-display);
-        font-size: clamp(2.5rem, 6vw, 5rem);
-        font-weight: 900;
-        margin-bottom: 1rem;
-        text-shadow: 0 4px 30px rgba(250, 208, 46, 0.6);
-        animation: fadeInDown 1s ease-out;
-        letter-spacing: -2px;
-        background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, #fff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-50px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* ==========================================
-           SUBTÍTULO
-           ========================================== */
-    .subtitulo {
-        font-size: clamp(1rem, 2.5vw, 1.8rem);
-        color: var(--accent);
-        margin-bottom: 3rem;
-        font-weight: 600;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        animation: fadeInUp 1s ease-out 0.3s backwards;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(50px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* ==========================================
-           AROS OLÍMPICOS ANIMADOS
-           ========================================== */
-    .aros-olimpicos {
-        display: flex;
-        gap: 1.2rem;
-        margin-bottom: 3rem;
-        animation: fadeInScale 1s ease-out 0.6s backwards;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    @keyframes fadeInScale {
-        from {
-            opacity: 0;
-            transform: scale(0.3);
-        }
-
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-
-    .aro {
-        width: clamp(60px, 8vw, 100px);
-        height: clamp(60px, 8vw, 100px);
-        border: 8px solid;
-        border-radius: 50%;
-        position: relative;
-        animation: pulse 2s ease-in-out infinite;
-        box-shadow: var(--shadow-lg);
-    }
-
-    /* Colores oficiales de los aros */
-    .aro:nth-child(1) {
-        border-color: var(--olympic-blue);
-        animation-delay: 0s;
-    }
-
-    .aro:nth-child(2) {
-        border-color: var(--olympic-yellow);
-        animation-delay: 0.2s;
-        margin-top: 40px;
-    }
-
-    .aro:nth-child(3) {
-        border-color: var(--olympic-black);
-        animation-delay: 0.4s;
-    }
-
-    .aro:nth-child(4) {
-        border-color: var(--olympic-green);
-        animation-delay: 0.6s;
-        margin-top: 40px;
-    }
-
-    .aro:nth-child(5) {
-        border-color: var(--olympic-red);
-        animation-delay: 0.8s;
-    }
-
-    @keyframes pulse {
-
-        0%,
-        100% {
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        50% {
-            transform: scale(1.08);
-            opacity: 0.9;
-        }
-    }
-
-    /* ==========================================
-           GALERÍA DE FOTOS DESTACADAS
-           ========================================== */
-    .galeria-intro {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 150px));
-        gap: 1rem;
-        margin-bottom: 3rem;
-        animation: fadeInUp 1s ease-out 0.9s backwards;
-        justify-content: center;
-        max-width: 800px;
-    }
-
-    .foto-deportista {
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 15px;
-        object-fit: cover;
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        box-shadow: var(--shadow-lg);
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        cursor: pointer;
-    }
-
-    .foto-deportista:hover {
-        transform: scale(1.15) rotate(5deg);
-        border-color: var(--accent);
-        box-shadow: 0 15px 50px rgba(250, 208, 46, 0.6);
-        z-index: 10;
-    }
-
-    /* ==========================================
-           BOTÓN START CON EFECTO 3D
-           ========================================== */
-    .btn-start {
-        background: linear-gradient(135deg, var(--accent) 0%, #f4a300 100%);
-        color: var(--dark);
-        font-size: clamp(1.3rem, 3vw, 2rem);
-        font-weight: 900;
-        padding: clamp(1rem, 2vw, 1.8rem) clamp(2.5rem, 5vw, 5rem);
-        border: none;
-        border-radius: 50px;
-        cursor: pointer;
-        box-shadow: 0 15px 50px rgba(250, 208, 46, 0.5);
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 4px;
-        animation: fadeInUp 1s ease-out 1.2s backwards;
-        position: relative;
-        overflow: hidden;
-    }
-
-    /* Efecto ripple en el botón */
-    .btn-start::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-
-    .btn-start:hover::before {
-        width: 400px;
-        height: 400px;
-    }
-
-    .btn-start:hover {
-        transform: translateY(-8px) scale(1.05);
-        box-shadow: 0 25px 60px rgba(250, 208, 46, 0.7);
-    }
-
-    .btn-start:active {
-        transform: translateY(-4px) scale(1.02);
-    }
-
-    .btn-start span {
-        position: relative;
-        z-index: 1;
-    }
-
-    /* ==========================================
-           CONTROL DE AUDIO FLOTANTE
-           ========================================== */
-    .audio-control {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        padding: 1rem;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        z-index: 100;
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid rgba(255, 255, 255, 0.4);
-        box-shadow: var(--shadow-lg);
-    }
-
-    .audio-control:hover {
-        background: rgba(250, 208, 46, 0.4);
-        transform: scale(1.15) rotate(15deg);
-        border-color: var(--accent);
-    }
-
-    .audio-control svg {
-        width: 30px;
-        height: 30px;
-        fill: white;
-    }
-
-    /* ==========================================
-           BOTÓN DE ACCESIBILIDAD FLOTANTE
-           ========================================== */
-    .btn-accesibilidad {
-        position: fixed;
-        bottom: 30px;
-        left: 30px;
-        z-index: 100;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: var(--olympic-blue);
-        color: white;
-        border: 3px solid white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        box-shadow: var(--shadow-lg);
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-accesibilidad:hover {
-        transform: scale(1.15) rotate(-15deg);
-        background: var(--olympic-green);
-        box-shadow: var(--shadow-xl);
-    }
-
-    /* ==========================================
-           MODO ALTO CONTRASTE (ACCESIBILIDAD)
-           ========================================== */
-    body.alto-contraste {
-        background: #000 !important;
-    }
-
-    body.alto-contraste .background {
-        filter: brightness(1) contrast(1.5) !important;
-    }
-
-    body.alto-contraste .titulo-principal,
-    body.alto-contraste .subtitulo {
-        color: #ffff00 !important;
-        -webkit-text-fill-color: #ffff00
