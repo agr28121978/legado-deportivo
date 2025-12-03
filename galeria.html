@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Legado Deportivo Global 3D - 40 Leyendas Deportivas Mundiales">
+    <meta name="author" content="Legado Deportivo Global">
+    <meta name="keywords" content="deportes, leyendas, atletas, historia, 3D">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Legado Deportivo Global 3D">
+    <meta property="og:description"
+        content="Explora 40 leyendas deportivas mundiales con fichas interactivas y modelos 3D">
+    <meta property="og:type" content="website">
+
+    <title>Legado Deportivo Global 3D - 40 Leyendas</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <!-- ============================================
+     HEADER GLOBAL CON NAVEGACIÓN
+     Se incluye en: intro.html, galeria.html, espana.html, fichas/*.html
+     ============================================ -->
+    <header class="header-global">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html">
+                    <img src="images/logo-olimpico.png" alt="Logo" height="50">
+                    <span>Legado Deportivo Global 3D</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">
+                                <i class="fas fa-home"></i> Inicio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="galeria.html">
+                                <i class="fas fa-globe"></i> Leyendas Internacionales
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="espana.html">
+                                <i class="fas fa-flag"></i> Leyendas España
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">
+                                <i class="fas fa-info-circle"></i> Acerca de
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1c1d4b;
+            --secondary: #16b9ce;
+            --accent: #fad02e;
+            --dark: #0a2331;
+            --light: #f8f9fa;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* PORTADA PRINCIPAL */
+        .portada {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 55%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portada::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/></pattern></defs><rect width="1200" height="600" fill="url(%23grid)" /></svg>');
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .portada-content {
+            text-align: center;
+            color: white;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .portada-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1rem;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .portada-content p {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-inicio {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(250, 208, 46, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-inicio:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(250, 208, 46, 0.5);
+        }
+
+        .videos-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 1200px;
+        }
+
+        .video-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .video-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .video-item iframe {
+            width: 100%;
+            height: 200px;
+            border: none;
+        }
+
+        /* CARRUSEL Y GALERÍA */
+        .galeria-section {
+            padding: 4rem 2rem;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .galeria-titulo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .galeria-titulo::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: var(--secondary);
+            margin: 1rem auto 0;
+        }
+
+        .galeria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .deportista-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .deportista-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .deportista-imagen {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deportista-imagen::after {
+            content: attr(data-initial);
+            position: absolute;
+            opacity: 0.1;
+            font-size: 150px;
+        }
+
+        .deportista-info {
+            padding: 1.5rem;
+        }
+
+        .deportista-info h3 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .deportista-deporte {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .deportista-pais {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-ficha {
+            background: var(--secondary);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-ficha:hover {
+            background: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* FICHA INDIVIDUAL */
+        .ficha-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .ficha-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ficha-header .deporte {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .ficha-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .ficha-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .ficha-imagen {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .ficha-info h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .ficha-info p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .ficha-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .video-section {
+            margin: 3rem 0;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-section h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .video-section iframe {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .modelo-3d-section {
+            margin: 3rem 0;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .modelo-3d-section h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .modelo-viewer {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, var(--light) 0%, #e9ecef 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #666;
+            border: 2px dashed var(--secondary);
+        }
+
+        /* NAVEGACIÓN */
+        .ficha-navigation {
+            display: flex;
+            gap: 1rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .nav-btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .nav-btn-primary:hover {
+            background: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-btn-secondary {
+            background: var(--light);
+            color: var(--primary);
+            border: 2px solid var(--secondary);
+        }
+
+        .nav-btn-secondary:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .portada-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .portada-content p {
+                font-size: 1.1rem;
+            }
+
+            .galeria-titulo {
+                font-size: 2rem;
+            }
+
+            .ficha-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ficha-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .video-section iframe,
+            .modelo-viewer {
+                height: 300px;
+            }
+
+            .ficha-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* UTILIDADES */
+        .container-custom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .badge-deporte {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--secondary);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .badge-pais {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--light);
+            color: var(--primary);
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--secondary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scroll-top.show {
+            opacity: 1;
+        }
+
+        .scroll-top:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- PORTADA PRINCIPAL -->
+    <section class="portada" id="portada">
+        <div class="portada-content">
+            <h1>🏆 Legado Deportivo Global 3D</h1>
+            <p>40 Leyendas Deportivas Mundiales</p>
+
+            <div class="videos-container">
+                <div class="video-item">
+                    <iframe src="https://www.youtube.com/embed/AUJlcHkJ1ZQ?autoplay=1&mute=1&loop=1" allowfullscreen
+                        allow="autoplay"></iframe>
+                    <p style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.1); margin: 0;">Bob
+                        Beamon - 8.90m</p>
+                </div>
+                <div class="video-item">
+                    <iframe src="https://www.youtube.com/embed/r8aAtoqHQxs?autoplay=1&mute=1&loop=1" allowfullscreen
+                        allow="autoplay"></iframe>
+                    <p style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.1); margin: 0;">
+                        Schumacher - 7 Títulos</p>
+                </div>
+                <div class="video-item">
+                    <iframe src="https://www.youtube.com/embed/UjTBXtqGfvI?autoplay=1&mute=1&loop=1" allowfullscreen
+                        allow="autoplay"></iframe>
+                    <p style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.1); margin: 0;">Nadal -
+                        14 Títulos</p>
+                </div>
+                <div class="video-item">
+                    <iframe src="https://www.youtube.com/embed/gibx9kq9c1k?autoplay=1&mute=1&loop=1" allowfullscreen
+                        allow="autoplay"></iframe>
+                    <p style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.1); margin: 0;">Jordan -
+                        69 Puntos</p>
+                </div>
+            </div>
+
+            <button class="btn-inicio" onclick="scrollToGaleria()">COMENZAR</button>
+        </div>
+    </section>
+
+    <!-- GALERÍA DE DEPORTISTAS -->
+    <section class="galeria-section" id="galeria">
+        <h2 class="galeria-titulo">40 Leyendas Deportivas</h2>
+
+        <div class="galeria-grid" id="galeria-grid">
+            <!-- Las tarjetas se generan aquí con JavaScript -->
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>&copy; 2025 Legado Deportivo Global 3D - Celebrando 40 Leyendas Deportivas</p>
+    </footer>
+
+    <!-- Botón Scroll Top -->
+    <div class="scroll-top" id="scrollTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Three.js para modelos 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // Datos de los 40 deportistas
+        const deportistas = [
+            { id: 1, nombre: "Paavo Nurmi", deporte: "Atletismo", pais: "Finlandia", año: 1897 },
+            { id: 2, nombre: "Bobby Jones", deporte: "Golf", pais: "Estados Unidos", año: 1902 },
+            { id: 3, nombre: "Helen Wills Moody", deporte: "Tenis", pais: "Estados Unidos", año: 1905 },
+            { id: 4, nombre: "Sonja Henie", deporte: "Patinaje Artístico", pais: "Noruega", año: 1912 },
+            { id: 5, nombre: "Jesse Owens", deporte: "Atletismo", pais: "Estados Unidos", año: 1913 },
+            { id: 6, nombre: "Joe Louis", deporte: "Boxeo", pais: "Estados Unidos", año: 1914 },
+            { id: 7, nombre: "Jackie Robinson", deporte: "Béisbol", pais: "Estados Unidos", año: 1919 },
+            { id: 8, nombre: "Hans Winkler", deporte: "Saltos Ecuestres", pais: "Alemania", año: 1926 },
+            { id: 9, nombre: "Garrincha", deporte: "Fútbol", pais: "Brasil", año: 1933 },
+            { id: 10, nombre: "Wilma Rudolph", deporte: "Atletismo", pais: "Estados Unidos", año: 1940 },
+            { id: 11, nombre: "Pelé", deporte: "Fútbol", pais: "Brasil", año: 1940 },
+            { id: 12, nombre: "Muhammad Ali", deporte: "Boxeo", pais: "Estados Unidos", año: 1942 },
+            { id: 13, nombre: "Arthur Ashe", deporte: "Tenis", pais: "Estados Unidos", año: 1943 },
+            { id: 14, nombre: "Billie Jean King", deporte: "Tenis", pais: "Estados Unidos", año: 1943 },
+            { id: 15, nombre: "Tommie Smith", deporte: "Atletismo", pais: "Estados Unidos", año: 1944 },
+            { id: 16, nombre: "Franz Beckenbauer", deporte: "Fútbol", pais: "Alemania", año: 1945 },
+            { id: 17, nombre: "Bob Beamon", deporte: "Atletismo", pais: "Estados Unidos", año: 1946 },
+            { id: 18, nombre: "Mark Spitz", deporte: "Natación", pais: "Estados Unidos", año: 1950 },
+            { id: 19, nombre: "Greta Waitz", deporte: "Atletismo", pais: "Noruega", año: 1953 },
+            { id: 20, nombre: "Björn Borg", deporte: "Tenis", pais: "Suecia", año: 1956 },
+            { id: 21, nombre: "Daley Thompson", deporte: "Atletismo", pais: "Reino Unido", año: 1958 },
+            { id: 22, nombre: "Florence Griffith-Joyner", deporte: "Atletismo", pais: "Estados Unidos", año: 1959 },
+            { id: 23, nombre: "Ayrton Senna", deporte: "Fórmula 1", pais: "Brasil", año: 1960 },
+            { id: 24, nombre: "Diego Maradona", deporte: "Fútbol", pais: "Argentina", año: 1960 },
+            { id: 25, nombre: "Carl Lewis", deporte: "Atletismo", pais: "Estados Unidos", año: 1961 },
+            { id: 26, nombre: "Nadia Comaneci", deporte: "Gimnasia Artística", pais: "Rumania", año: 1961 },
+            { id: 27, nombre: "Michael Jordan", deporte: "Baloncesto", pais: "Estados Unidos", año: 1963 },
+            { id: 28, nombre: "Boris Becker", deporte: "Tenis", pais: "Alemania", año: 1967 },
+            { id: 29, nombre: "Steffi Graf", deporte: "Tenis", pais: "Alemania", año: 1969 },
+            { id: 30, nombre: "Juan Carlos Ferrero", deporte: "Tenis", pais: "España", año: 1975 },
+            { id: 31, nombre: "Roger Federer", deporte: "Tenis", pais: "Suiza", año: 1981 },
+            { id: 32, nombre: "Serena Williams", deporte: "Tenis", pais: "Estados Unidos", año: 1981 },
+            { id: 33, nombre: "Christine Ohuruogu", deporte: "Atletismo", pais: "Reino Unido", año: 1984 },
+            { id: 34, nombre: "Cristiano Ronaldo", deporte: "Fútbol", pais: "Portugal", año: 1985 },
+            { id: 35, nombre: "Michael Phelps", deporte: "Natación", pais: "Estados Unidos", año: 1985 },
+            { id: 36, nombre: "Rafael Nadal", deporte: "Tenis", pais: "España", año: 1986 },
+            { id: 37, nombre: "Marta Vieira da Silva", deporte: "Fútbol Femenino", pais: "Brasil", año: 1986 },
+            { id: 38, nombre: "Usain Bolt", deporte: "Atletismo", pais: "Jamaica", año: 1986 },
+            { id: 39, nombre: "Lionel Messi", deporte: "Fútbol", pais: "Argentina", año: 1987 },
+            { id: 40, nombre: "Simone Biles", deporte: "Gimnasia Artística", pais: "Estados Unidos", año: 1997 }
+        ];
+
+        // Generar galería
+        function generarGaleria() {
+            const galeriaGrid = document.getElementById('galeria-grid');
+            galeriaGrid.innerHTML = '';
+
+            deportistas.forEach((deportista, index) => {
+                const card = document.createElement('div');
+                card.className = 'deportista-card fade-in';
+                card.style.animationDelay = `${index * 0.05}s`;
+
+                const inicial = deportista.nombre.charAt(0).toUpperCase();
+
+                card.innerHTML = `
+                    <div class="deportista-imagen" data-initial="${inicial}">
+                        <span style="text-align: center;">
+                            <i class="fas fa-user-circle" style="font-size: 80px; opacity: 0.5;"></i>
+                        </span>
+                    </div>
+                    <div class="deportista-info">
+                        <h3>${deportista.nombre}</h3>
+                        <div class="deportista-deporte">
+                            <span class="badge-deporte">${deportista.deporte}</span>
+                        </div>
+                        <div class="deportista-pais">
+                            <span class="badge-pais">${deportista.pais}</span>
+                        </div>
+                        <button class="btn-ficha" onclick="abrirFicha(${deportista.id})">
+                            <i class="fas fa-arrow-right"></i> Ver Legado
+                        </button>
+                    </div>
+                `;
+
+                galeriaGrid.appendChild(card);
+            });
+        }
+
+        // Abrir ficha individual
+        function abrirFicha(id) {
+            const deportista = deportistas.find(d => d.id === id);
+            if (deportista) {
+                // Aquí se abre la ficha individual
+                // En producción, navegar a: fichas/[nombre].html
+                alert(`Abriendo: ${deportista.nombre}\n\nEn producción navegará a: fichas/${deportista.nombre.toLowerCase().replace(/\s+/g, '-')}.html`);
+            }
+        }
+
+        // Scroll a galería
+        function scrollToGaleria() {
+            document.getElementById('galeria').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Scroll top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Mostrar/ocultar botón scroll top
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.getElementById('scrollTop');
+            if (window.pageYOffset > 300) {
+                scrollTop.classList.add('show');
+            } else {
+                scrollTop.classList.remove('show');
+            }
+        });
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            generarGaleria();
+        });
+    </script>
+</body>
+
+</html>
